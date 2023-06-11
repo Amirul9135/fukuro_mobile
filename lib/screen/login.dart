@@ -1,3 +1,4 @@
+import 'package:fukuro_mobile/component/fukuro_dialog.dart';
 import 'package:fukuro_mobile/screen/register.dart';
 
 import 'package:fukuro_mobile/screen//home.dart';
@@ -186,11 +187,8 @@ class __FormContentState extends State<_FormContent> {
                       if (mounted) {
                         showDialog(
                             context: context,
-                            builder: (_) => CupertinoAlertDialog(
-                                  title: const Text("Error"),
-                                  content: Text(
-                                      "Invalid Sign In ${response.statusCode.toString()}"),
-                                ));
+                            builder: (_) =>  FukuroDialog(title: 'Error', message: 'Invalid Login please try again', mode: FukuroDialog.ERROR)
+                        );
                       }
                     }
                   }
