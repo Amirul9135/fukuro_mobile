@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/screen/login.dart';
-import 'package:sizer/sizer.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:fukuro_mobile/component/security_form.dart';
 import 'package:fukuro_mobile/component/user_form.dart';
 import 'package:http/http.dart' as http;
@@ -24,6 +22,8 @@ class _RegisterState extends State<Register>
   final userFormKey = GlobalKey<UserFormState>();
   final securityFormKey = GlobalKey<SecurityFormState>();
 
+  var _firstChange = true;
+
   final Map<String, String> userData = {
     "name": "",
     "username": "",
@@ -36,16 +36,17 @@ class _RegisterState extends State<Register>
     "pin": "",
     "cpin": ""
   };
+   bool isValidUserData = false;
+   bool isValidSecurityData = false;
 
   final _iconTabs = const [
     Tab(icon: Icon(Icons.account_circle)),
     Tab(icon: Icon(Icons.security)),
-    Tab(icon: Icon(Icons.list)),
   ];
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(onTabChange);
     super.initState();
   }
@@ -56,29 +57,102 @@ class _RegisterState extends State<Register>
     _tabController.dispose();
   }
 
-  valiateSubmit() async {
-    if ((userFormKey.currentState?.getFormKey().currentState?.validate() ??
-            false) &
-        (securityFormKey.currentState?.getFormKey().currentState?.validate() ??
-            false)) {
+  @override
+  Widget build(BuildContext context) {
+    UserForm userForm = UserForm(
+      key: userFormKey,
+      formData: userData,
+    );
+    SecurityForm secForm =
+        SecurityForm(key: securityFormKey, formData: securityData);
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+          backgroundColor: _selectedColor,
+          title: const Text("Register New Account")),
+      body: Column(
+        children: [
+          TabBar(
+            controller: _tabController,
+            tabs: _iconTabs,
+            unselectedLabelColor: Colors.black,
+            labelColor: _selectedColor,
+            indicator: BoxDecoration(
+              borderRadius: BorderRadius.circular(80.0),
+              color: _selectedColor.withOpacity(0.2),
+            ),
+          ),
+          Expanded(
+              child: TabBarView(controller: _tabController, children: [
+            Container(
+              alignment: Alignment.topCenter,
+              child: userForm,
+            ),
+            Container(
+              alignment: Alignment.topCenter,
+              child: secForm,
+            ),
+          ]))
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          // Action to perform when the button is pressed
+          valiateSubmit();
+        },
+
+        label: const Text('Register'),
+        icon: const Icon(Icons.navigate_next_sharp),
+        hoverColor: Colors.blue, // Optional: Change the hover color
+        hoverElevation: 10, // Optional: Adjust the elevation on hover
+      ),
+    );
+  }
+
+  valiateSubmit() async { 
+    _saveInputValue();
+    if (isValidSecurityData && !isValidUserData && _tabController.index == 1) {
+      showDialog(
+          context: context,
+          builder: (_) => FukuroDialog(
+                title: "Invalid User Information",
+                message: "Please Check your User information",
+                mode: FukuroDialog.ERROR,
+                okAction: () {
+                  _tabController.animateTo(0);
+                },
+              ));
+      return;
+    }
+    if (isValidUserData && !isValidSecurityData && _tabController.index == 0) {
+      showDialog(
+          context: context,
+          builder: (_) => FukuroDialog(
+                title: "Invalid Security Details",
+                message: "Please Check your Security Details",
+                mode: FukuroDialog.ERROR,
+                okAction: () {
+                  _tabController.animateTo(1);
+                },
+              ));
+      return;
+    }
+    if (isValidUserData && isValidSecurityData) {
       _saveInputValue();
-      Map<String, String> payload = {
-        "name": userData["name"].toString(),
-        "username": userData["username"].toString(),
-        "email": userData["email"].toString(),
-        "password": securityData["pass"].toString(),
-        "phone": userData["phone"].toString(),
-        "pin": securityData["pin"].toString()
-      };
-      print(payload);
       http.Response response = await http.post(
         Uri.parse('http://10.0.2.2:5000/api/user'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(payload),
+        body: jsonEncode({
+          "name": userData["name"].toString(),
+          "username": userData["username"].toString(),
+          "email": userData["email"].toString(),
+          "password": securityData["pass"].toString(),
+          "phone": userData["phone"].toString(),
+          "pin": securityData["pin"].toString()
+        }),
       );
-      print(response.body);
       if (mounted) {
         print(response.body);
         if (response.statusCode == 200) {
@@ -116,79 +190,6 @@ class _RegisterState extends State<Register>
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    UserForm userForm = UserForm(
-      key: userFormKey,
-      formData: userData,
-    );
-    SecurityForm secForm =
-        SecurityForm(key: securityFormKey, formData: securityData);
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-          backgroundColor: _selectedColor,
-          title: const Text("Register New Account")),
-      body: Column(
-        children: [
-          Center(
-            child: Container(
-                padding: const EdgeInsets.all(8.0),
-                constraints: const BoxConstraints(maxWidth: 400),
-                child: Column(
-                  children: [
-                    TabBar(
-                      controller: _tabController,
-                      tabs: _iconTabs,
-                      unselectedLabelColor: Colors.black,
-                      labelColor: _selectedColor,
-                      indicator: BoxDecoration(
-                        borderRadius: BorderRadius.circular(80.0),
-                        color: _selectedColor.withOpacity(0.2),
-                      ),
-                    ),
-                    SingleChildScrollView(
-                        child: SizedBox(
-                      height: 80.h,
-                      child: ListView(
-                        shrinkWrap: true,
-                        children: [
-                          if (_tabController.index == 2 ||
-                              _tabController.index == 0)
-                            userForm,
-                          if (_tabController.index == 2 ||
-                              _tabController.index == 1)
-                            secForm
-                        ]
-                            .map((item) => Column(
-                                  /// Added a divider after each item to let the tabbars have room to breathe
-                                  children: [
-                                    item,
-                                    const Divider(color: Colors.transparent)
-                                  ],
-                                ))
-                            .toList(),
-                      ),
-                    )),
-                  ],
-                )),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Action to perform when the button is pressed
-          valiateSubmit();
-        },
-
-        label: const Text('Register'),
-        icon: const Icon(Icons.navigate_next_sharp),
-        hoverColor: Colors.blue, // Optional: Change the hover color
-        hoverElevation: 10, // Optional: Adjust the elevation on hover
-      ),
-    );
-  }
-
   _saveInputValue() {
     userData["name"] =
         userFormKey.currentState?.txtName.text ?? userData["name"] ?? '';
@@ -199,6 +200,8 @@ class _RegisterState extends State<Register>
         userFormKey.currentState?.txtEmail.text ?? userData["email"] ?? '';
     userData["phone"] =
         userFormKey.currentState?.txtPhone.text ?? userData["phone"] ?? '';
+    isValidUserData =  userFormKey.currentState?.getFormKey().currentState?.validate() ?? isValidUserData ?? false;
+    
     //security
     securityData["pass"] = securityFormKey.currentState?.txtPass.text ??
         securityData["pass"] ??
@@ -211,9 +214,29 @@ class _RegisterState extends State<Register>
     securityData["cpin"] = securityFormKey.currentState?.txtConfPin.text ??
         securityData["cpin"] ??
         '';
+    isValidSecurityData =  securityFormKey.currentState?.getFormKey().currentState?.validate() ?? isValidSecurityData ?? false;
   }
 
   onTabChange() {
+    if (_tabController.indexIsChanging) {
+      // Animation is in progress
+      //do nothing
+      return;
+    }
+    if (!_firstChange) {
+      if (_tabController.index == 0) {
+        userFormKey.currentState?.getFormKey().currentState?.validate();
+      }
+      if (_tabController.index == 1) {
+        securityFormKey.currentState?.getFormKey().currentState?.validate();
+      }
+    }
+    if (_firstChange) {
+      //first time no need to do anything yet
+      _firstChange = false;
+      return;
+    } 
+
     setState(() {
       _saveInputValue();
     });

@@ -13,7 +13,7 @@ class SecurityFormState extends State<SecurityForm> {
   TextEditingController txtPass = TextEditingController();
   TextEditingController txtConfPass = TextEditingController();
   TextEditingController txtPin = TextEditingController();
-  TextEditingController txtConfPin = TextEditingController();
+  TextEditingController txtConfPin = TextEditingController(); 
   bool isPassVis = false;
   bool isConfPassVis = false;
   bool isPinVis = false;
@@ -59,7 +59,7 @@ class SecurityFormState extends State<SecurityForm> {
               color: Colors.black,
             ),
             _gap(),
-            TextFormField(
+            TextFormField(  
               controller: txtPass,
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -150,7 +150,7 @@ class SecurityFormState extends State<SecurityForm> {
                   )),
             ),
             _gap(),
-            TextFormField(
+            TextFormField( 
               controller: txtConfPin,
               validator: (value) {
                 if (value == null || value.isEmpty) {

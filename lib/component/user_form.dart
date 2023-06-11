@@ -63,11 +63,7 @@ class UserFormState extends State<UserForm>  {
                 if (value == null || value.isEmpty) {
                   return 'Cannot be empty';
                 }
-
-                bool emailValid = RegExp(r"^[a-zA-z0-9]{6,}").hasMatch(value);
-                if (!emailValid) {
-                  return 'Please enter a valid email';
-                }
+ 
 
                 return null;
               },
