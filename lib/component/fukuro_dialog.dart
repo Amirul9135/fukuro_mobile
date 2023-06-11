@@ -12,8 +12,8 @@ class FukuroDialog extends StatelessWidget {
   final String title;
   final String message;
   final int mode;
-  Function? okAction;
-   FukuroDialog(
+  final Function? okAction;
+  const FukuroDialog(
       {super.key,
       required this.title,
       required this.message,
