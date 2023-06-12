@@ -19,7 +19,7 @@ class Home extends StatelessWidget {
                 flexibleSpace: FlexibleSpaceBar(
                     centerTitle: true,
                     collapseMode: CollapseMode.parallax,
-                    title: const Text("Collapsing Appbar",
+                    title: const Text("FUKURO",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16.0,
@@ -33,7 +33,7 @@ class Home extends StatelessWidget {
                 delegate: _SliverAppBarDelegate(
                   const TabBar(
                     indicatorSize: TabBarIndicatorSize.label,
-                    labelColor: Colors.purple,
+                    labelColor: Colors.blue,
                     unselectedLabelColor: Colors.grey,
                     tabs: _tabs,
                   ),
@@ -48,16 +48,17 @@ class Home extends StatelessWidget {
                         child: Text("${e.text}", textAlign: TextAlign.center),
                       ))
                   .toList()),
-        ),
+        ), 
+        floatingActionButton: FloatingActionButton(onPressed: (){},child: Icon(Icons.settings),),
       ),
     );
   }
 }
 
 const _tabs = [
-  Tab(icon: Icon(Icons.home_rounded), text: "Home"),
-  Tab(icon: Icon(Icons.shopping_bag_rounded), text: "Cart"),
-  Tab(icon: Icon(Icons.person), text: "Profile"),
+  Tab(icon: Icon(Icons.dashboard_rounded), text: "Dashboard"),
+  Tab(icon: Icon(Icons.circle_notifications), text: "Notifications"),
+  Tab(icon: Icon(Icons.monitor_heart_rounded), text: "Monitoring"),
 ];
 
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
