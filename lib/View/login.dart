@@ -1,20 +1,50 @@
-import 'package:fukuro_mobile/component/fukuro_dialog.dart';
-import 'package:fukuro_mobile/screen/register.dart';
 
-import 'package:fukuro_mobile/screen//home.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:fukuro_mobile/View/Component/fukuro_dialog.dart';
+import 'package:fukuro_mobile/View/register.dart';
+ 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:fukuro_mobile/Controller/SecureStorage.dart';
+import 'package:fukuro_mobile/Controller/Authentication.dart';
 
-class Login extends StatelessWidget {
-  const Login({Key? key}) : super(key: key);
+class Login extends StatefulWidget {
+  const Login({super.key});
+
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  bool _verified = false; 
+  bool _isInitialized = false;
+ 
+  
+   @override
+   void initState() {
+    // TODO: implement initState
+    super.initState();
+    
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) async {  
+          _verified = await verifyToken();
+          _isInitialized = true; 
+            setState(() {
+              
+            });
+          if(_verified){ 
+            
+            Navigator.pushNamed(context, '/home');
+          } 
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
-
-    return Scaffold(
+     
+    if(_isInitialized && !_verified) {
+      return Scaffold(
         body: Center(
             child: isSmallScreen
                 ? const Column(
@@ -36,17 +66,16 @@ class Login extends StatelessWidget {
                       ],
                     ),
                   )),
-                  floatingActionButton: FloatingActionButton(
-                    
-                    onPressed: (){
-                    
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const Home()),
-                        );
-                  }),);
+      );
+    }
+    else{
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    
   }
-}
+ }
 
 class _Logo extends StatelessWidget {
   const _Logo({Key? key}) : super(key: key);
@@ -93,7 +122,7 @@ class __FormContentState extends State<_FormContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Container( 
+    return Container(
       constraints: const BoxConstraints(maxWidth: 300),
       child: Form(
         key: _formKey,
@@ -183,21 +212,29 @@ class __FormContentState extends State<_FormContent> {
                         "password": tecPassword.text
                       }),
                     );
-
+                    print(response.body);
                     if (response.statusCode == 200) {
                       if (mounted) {
                         //store token
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const Home()),
-                        );
+                        print(response.body);
+                        Map<String, dynamic> data = jsonDecode(response.body);
+
+                        print(data);
+                        print(data["token"]);
+                        SecureStorage storage = SecureStorage();
+                        storage.write("jwt", data["token"]);
+                        storage.write("uid", data["uid"].toString());
+
+                        Navigator.pushNamed(context, '/home');
                       }
                     } else {
                       if (mounted) {
                         showDialog(
                             context: context,
-                            builder: (_) =>  FukuroDialog(title: 'Error', message: 'Invalid Login please try again', mode: FukuroDialog.ERROR)
-                        );
+                            builder: (_) => FukuroDialog(
+                                title: 'Error',
+                                message: 'Invalid Login please try again',
+                                mode: FukuroDialog.ERROR));
                       }
                     }
                   }
@@ -205,15 +242,11 @@ class __FormContentState extends State<_FormContent> {
               ),
             ),
             SizedBox(
-              
               width: double.infinity,
-              
-              child: ElevatedButton( 
-                
+              child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
-                      
                       borderRadius: BorderRadius.circular(4)),
                 ),
                 child: const Padding(
@@ -223,11 +256,11 @@ class __FormContentState extends State<_FormContent> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
-                onPressed: ()  { 
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const Register()),
-                        );
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Register()),
+                  );
                 },
               ),
             ),

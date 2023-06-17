@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fukuro_mobile/screen/login.dart';
-import 'package:fukuro_mobile/component/security_form.dart';
-import 'package:fukuro_mobile/component/user_form.dart';
+import 'package:fukuro_mobile/View/login.dart';
+import 'package:fukuro_mobile/View/Component/security_form.dart';
+import 'package:fukuro_mobile/View/Component/user_form.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:fukuro_mobile/component/fukuro_dialog.dart';
+import 'package:fukuro_mobile/View/Component/fukuro_dialog.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'screen/login.dart';
+import 'package:fukuro_mobile/View/home.dart';
+import 'package:fukuro_mobile/View/register.dart';
+import 'View/login.dart';
 import 'package:sizer/sizer.dart'; 
 
 void main() {
@@ -13,8 +15,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Sizer(builder: (context, orientation, deviceType) {
-      return const MaterialApp(
-        home: Login(),
+      return  MaterialApp(
+      title: 'FUKURO',
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const Login(),
+        '/register': (context) => const Register(),
+        '/home': (context) => const Home(),
+      },
       );
     }); 
   }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fukuro_mobile/View/Component/expandable_fab.dart';
+import 'package:fukuro_mobile/Controller/Authentication.dart';
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
@@ -11,23 +13,21 @@ class Home extends StatelessWidget {
         body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
-              SliverAppBar(
+              const SliverAppBar(
                 expandedHeight: 300.0,
                 floating: false,
                 pinned: true,
                 stretch: true,
+                automaticallyImplyLeading: false,
                 flexibleSpace: FlexibleSpaceBar(
                     centerTitle: true,
                     collapseMode: CollapseMode.parallax,
-                    title: const Text("FUKURO",
+                    title:  Text("FUKURO",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16.0,
                         )),
-                    background: Image.network(
-                      "https://images.pexels.com/photos/417173/pexels-photo-417173.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-                      fit: BoxFit.cover,
-                    )),
+                    ),
               ),
               SliverPersistentHeader(
                 delegate: _SliverAppBarDelegate(
@@ -48,8 +48,28 @@ class Home extends StatelessWidget {
                         child: Text("${e.text}", textAlign: TextAlign.center),
                       ))
                   .toList()),
-        ), 
-        floatingActionButton: FloatingActionButton(onPressed: (){},child: Icon(Icons.settings),),
+        ),
+        floatingActionButton: ExpandableFab(
+          icon: const Icon(Icons.settings),
+          distance: 100,
+          children: [
+            ActionButton(
+              onPressed: () async {
+                await logOut();
+                Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+              },
+              icon: const Icon(Icons.logout),
+            ),
+            ActionButton(
+              onPressed: () {},
+              icon: const Icon(Icons.settings),
+            ),
+            ActionButton(
+              onPressed: () {},
+              icon: const Icon(Icons.person),
+            ),
+          ],
+        ),
       ),
     );
   }
