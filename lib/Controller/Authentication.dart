@@ -8,7 +8,7 @@ Future<bool> verifyToken() async {
 
   if (await storage.check("jwt") && await storage.check("uid")) {
     FukuroRequest reqVerify = FukuroRequest(
-        "user/verify", await storage.read("jwt"), await storage.read("uid"));
+        "user/verify");
 
     http.Response res = await reqVerify.get();
 
@@ -34,7 +34,7 @@ Future<bool> logOut() async {
 
   if (await storage.check("jwt") && await storage.check("uid")) {
     FukuroRequest req = FukuroRequest(
-        "user/logout", await storage.read("jwt"), await storage.read("uid"));
+        "user/logout");
     http.Response res = await req.get();
 
     print(res.statusCode);

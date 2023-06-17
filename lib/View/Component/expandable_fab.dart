@@ -135,7 +135,10 @@ class _ExpandableFabState extends State<ExpandableFab>
           duration: const Duration(milliseconds: 250),
           child: FloatingActionButton(
             onPressed: _toggle,
+            
+          shape: RoundedRectangleBorder(side: const BorderSide(width: 3,color: Colors.white),borderRadius: BorderRadius.circular(100)),
             child: widget.icon,
+            
           ),
         ),
       ),
