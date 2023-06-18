@@ -1,5 +1,5 @@
 
-import 'package:fukuro_mobile/View/Component/fukuro_dialog.dart';
+import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/register.dart';
  
 import 'package:flutter/material.dart';

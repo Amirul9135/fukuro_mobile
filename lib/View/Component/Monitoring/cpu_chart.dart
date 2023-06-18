@@ -12,7 +12,7 @@ class CpuChart extends StatefulWidget {
   final Color interrupt;
   final Color system;
   final Color highlight;
-  final String title; 
+   String title; 
 
   CpuChart({
     Key? key,
@@ -33,13 +33,31 @@ class CpuChartState extends State<CpuChart> {
   @override
   void initState() {
     super.initState();
-    loadDummyData();
+  //  loadDummyData();
     setState(() {});
     print("sssss");
   }
     final List<CpuUsage> _data = [];
 
-  loadDummyData(){
+
+loadDataset(String datatitle,List<CpuUsage> lst){
+  _data.clear();
+  _data.addAll(lst);
+  widget.title = datatitle;
+  setState(() {
+    
+  });
+
+}
+
+addData(CpuUsage reading){
+  _data.add(reading);
+  setState(() {
+    
+  });
+}
+
+  _loadDummyData(){
     CpuUsage cpu1 = CpuUsage.fromJson( {
         "user": 11.382,
         "interrupt": 22.13,
@@ -99,7 +117,7 @@ class CpuChartState extends State<CpuChart> {
     return Container(
         constraints: BoxConstraints(maxHeight: maxHeight, minHeight: 300),
         height: 40.h,
-        padding: EdgeInsets.only(right: 20),
+        padding: const EdgeInsets.only(right: 20),
         child: SfCartesianChart( 
           legend: Legend(
             isVisible: true,
@@ -109,14 +127,16 @@ class CpuChartState extends State<CpuChart> {
             title: ChartTitle(text: widget.title),
             primaryXAxis: DateTimeAxis(
               dateFormat: DateFormat('HH:mm:ss\nyyyy-MM-dd'),
+              edgeLabelPlacement: EdgeLabelPlacement.none,
               intervalType: DateTimeIntervalType.auto,
               minimum: _data[0].dateTime,
-              maximum: _data.last.dateTime,
+              maximum: _data.last.dateTime,   
+              
             ),
             primaryYAxis: NumericAxis(
-              minimum: 0, // Set the minimum value of the Y-axis
-              maximum: 100, // Set the maximum value of the Y-axis
+              enableAutoIntervalOnZooming: true, 
               axisLine: const AxisLine(width: 1), // Customize the axis line
+              minimum: 0,
               majorGridLines: MajorGridLines(
                   width: 1,
                   color: widget.mainColor

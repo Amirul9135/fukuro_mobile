@@ -7,7 +7,10 @@ import '../Controller/SecureStorage.dart';
 class FukuroRequest {
   final Map<String, dynamic> _body = {};
   final Map<String, String> _headers = {};
-   static  String _fukuroUrl = "http://10.0.2.2:5000/api/";
+
+  static String _fukuroUrl = "http://10.0.2.2:5000/api/";
+  static String wsfukuroUrl = "ws:/10.0.2.2:5000/";
+
   String _path = "";
   
   SecureStorage storage = SecureStorage();
@@ -54,18 +57,9 @@ class FukuroRequest {
     await _loadToken();
     print(_headers);
     return await http.get(
-      Uri.parse(FukuroRequest._fukuroUrl+_path),
-      headers: _headers
+      Uri.parse(FukuroRequest._fukuroUrl+_path), 
+      headers: _headers,
     ); 
   }  
-  //      http.Response response = await http.post(
-  //        Uri.parse('http://10.0.2.2:5000/api/user/login'),
-  //        headers: <String, String>{
-  //          'Content-Type': 'application/json; charset=UTF-8',
-  //        },
-  //        body: jsonEncode(<String, String>{
-  //          "username": tecUsername.text,
-  //          "password": tecPassword.text
-  //        }),
-  //      );
+  
 }
