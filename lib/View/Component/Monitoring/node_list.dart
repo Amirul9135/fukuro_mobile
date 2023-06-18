@@ -21,6 +21,7 @@ class NodeListState extends State<NodeList> {
         .addPostFrameCallback((_) async {  
           _nodes.clear();
           _nodes.addAll(await fetchAllUserOwnedNodes());
+          //loadData();
           setState(() {
             
           });
@@ -44,7 +45,11 @@ class NodeListState extends State<NodeList> {
               (BuildContext context, int index) {
                 return Container(
                   decoration: BoxDecoration(
-                    color: Colors.blueGrey,
+                    color: Colors.blueGrey[200],
+                    border: Border.all(
+                      color: Colors.lightBlue,
+                      width: 1.0,
+                    ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   padding:  const EdgeInsets.all(15.0),

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:fukuro_mobile/View/Component/Monitoring/node_list.dart';
-import 'package:fukuro_mobile/View/Component/expandable_fab.dart';
-import 'package:fukuro_mobile/Controller/Authentication.dart';
+import 'package:fukuro_mobile/Model/node.dart';
+import 'package:fukuro_mobile/View/Component/Monitoring/node_monitoring.dart';
 
-class Home extends StatefulWidget {
-  Home({Key? key}) : super(key: key);
-
+class NodeScreen extends StatefulWidget {
+ 
+  const NodeScreen({Key? key, required this.thisNode}) : super(key: key);
+  final Node thisNode;
+  
   @override
-  State<Home> createState() => HomeState();
+  NodeScreenState createState() => NodeScreenState();
 }
 
-class HomeState extends State<Home> with SingleTickerProviderStateMixin {
+class NodeScreenState extends State<NodeScreen> with SingleTickerProviderStateMixin{
   late TabController _tabController;
 
   @override
@@ -20,25 +21,24 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
     super.initState();
   }
  
-@override
-Widget build(BuildContext context) {
-  return DefaultTabController(
+  @override
+  Widget build(BuildContext context) {
+     return DefaultTabController(
     length: 3,
     child: Scaffold(
       body: CustomScrollView(
         slivers: [
-          const SliverAppBar(
+           SliverAppBar( 
             expandedHeight: 300.0,
             floating: true,
             pinned: true,
-            snap: false,
-            automaticallyImplyLeading: false,
+            snap: false, 
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               collapseMode: CollapseMode.parallax,
               title: Text(
-                "FUKURO",
-                style: TextStyle(
+                widget.thisNode.getName(),
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16.0,
                 ),
@@ -46,11 +46,8 @@ Widget build(BuildContext context) {
             ),
           ),
           SliverPersistentHeader(
-            
             delegate: _SliverAppBarDelegate(
-              
-              tabBar:  TabBar(
-                
+              tabBar: TabBar(
                 controller: _tabController,
                 indicatorSize: TabBarIndicatorSize.label,
                 labelColor: Colors.blue,
@@ -63,43 +60,25 @@ Widget build(BuildContext context) {
             floating: true,
           ),
           SliverFillRemaining( 
-            child: TabBarView(
+            child: 
+            
+            TabBarView(
               controller: _tabController,
               children: const [
-                Text("dashboard"),
-                NodeList(),
-                Text("notification"),
+                NodeMonitoring(),
+                Text("Command"),
+                Text("Config"),
               ],
             ),
           ),
         ],
       ),
-      floatingActionButton: ExpandableFab(
-        icon: const Icon(Icons.settings),
-        distance: 100,
-        children: [
-          ActionButton(
-            onPressed: () async {
-              await logOut();
-              Navigator.pushNamedAndRemoveUntil(
-                  context, '/', (route) => false);
-            },
-            icon: const Icon(Icons.logout),
-          ),
-          ActionButton(
-            onPressed: () {},
-            icon: const Icon(Icons.settings),
-          ),
-          ActionButton(
-            onPressed: () {},
-            icon: const Icon(Icons.person),
-          ),
-        ],
-      ),
     ),
   );
-}
 
+  }
+
+  
  
   _onTabChange() {
     print("change");
@@ -107,10 +86,12 @@ Widget build(BuildContext context) {
   }
 }
 
-const _tabs = [
-  Tab(icon: Icon(Icons.dashboard_rounded), text: "Dashboard"),
+
+
+const _tabs = [ 
   Tab(icon: Icon(Icons.monitor_heart_rounded), text: "Monitoring"),
-  Tab(icon: Icon(Icons.circle_notifications), text: "Notifications"),
+  Tab(icon: Icon(Icons.connected_tv_outlined), text: "Command"),
+  Tab(icon: Icon(Icons.settings), text: "Configuration"),
 ];
 
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {

@@ -6,30 +6,34 @@ class NodeItem extends StatelessWidget {
   const NodeItem({Key? key, required this.node}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Row(
-       
-  mainAxisAlignment: MainAxisAlignment.start,
+    return GestureDetector(
+      onTap: (){
+        print("tap");
+        Navigator.pushNamed(context, '/node', arguments: node);
+      },
+      child: Row(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const Icon(
+         Icon(
           Icons.connected_tv_outlined,
           size: 80,
-          color: Colors.white,
+          color: Colors.grey[50],
         ),
-        Column( 
-  crossAxisAlignment: CrossAxisAlignment.start,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(node.getName(),
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              decoration: TextDecoration.underline,
-              fontSize: 25
-            ),),
-            Text(node.getIpAddress(),
-            style: const TextStyle(
-              fontStyle: FontStyle.italic,
-              fontSize: 20
-            ),)
-            ],
+            Text(
+              node.getName(),
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                  fontSize: 25),
+            ),
+            Text(
+              node.getIpAddress(),
+              style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 20),
+            )
+          ],
         ),
         const Spacer(),
         const Icon(
@@ -38,6 +42,7 @@ class NodeItem extends StatelessWidget {
           color: Colors.white,
         ),
       ],
+    ),
     );
   }
 }

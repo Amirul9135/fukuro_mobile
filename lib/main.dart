@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fukuro_mobile/Model/node.dart';
+import 'package:fukuro_mobile/View/Component/Monitoring/node_main.dart';
 import 'package:fukuro_mobile/View/home.dart';
 import 'package:fukuro_mobile/View/register.dart';
 import 'View/login.dart';
@@ -18,10 +20,20 @@ class MyApp extends StatelessWidget {
       return  MaterialApp(
       title: 'FUKURO',
       initialRoute: '/',
+        onGenerateRoute: (RouteSettings settings) {
+          if (settings.name == '/node') {
+            final args = settings.arguments as Node;
+            return MaterialPageRoute(
+              builder: (context) => NodeScreen(thisNode: args,),
+            );
+          }
+          // Handle other routes here if needed
+          return null;
+        },
       routes: {
         '/': (context) => const Login(),
         '/register': (context) => const Register(),
-        '/home': (context) =>  Home(),
+        '/home': (context) =>  Home(), 
       },
       );
     }); 
