@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:fukuro_mobile/Model/fukuro_request.dart';
+import 'package:flutter/material.dart'; 
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Monitoring/node_history.dart';
 import 'package:fukuro_mobile/View/Component/Monitoring/node_monitoring.dart';
@@ -72,6 +71,8 @@ class NodeScreenState extends State<NodeScreen>
                   ),
                   NodeMonitoring(
                     thisnode: widget.thisNode,
+                    parentController: _tabController,
+                    fallback: 0,
                   ),
                   Text("Command"),
                   Text("Config"),

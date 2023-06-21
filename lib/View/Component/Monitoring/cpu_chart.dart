@@ -56,6 +56,12 @@ addData(CpuUsage reading){
     
   });
 }
+addDataList(List<CpuUsage> lst){
+  _data.addAll(lst);
+  setState(() {
+    
+  });
+}
 
   _loadDummyData(){
     CpuUsage cpu1 = CpuUsage.fromJson( {

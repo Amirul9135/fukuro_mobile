@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../Controller/SecureStorage.dart';
+import 'SecureStorage.dart';
 
 class FukuroRequest {
   final Map<String, dynamic> _body = {};
   final Map<String, String> _headers = {};
 
   static String _fukuroUrl = "http://10.0.2.2:5000/api/";
-  static String wsfukuroUrl = "ws:/10.0.2.2:5000/";
+  static String wsfukuroUrl = "ws://10.0.2.2:5000";
 
   String _path = "";
   

@@ -1,7 +1,7 @@
 import 'package:fukuro_mobile/Model/cpu_usage.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'dart:convert';
-import '../Model/fukuro_request.dart';
+import 'fukuro_request.dart';
 import 'package:http/http.dart' as http;
 
 Future<List<Node>> fetchAllUserOwnedNodes() async {

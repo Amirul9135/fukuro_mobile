@@ -1,6 +1,6 @@
 import 'package:fukuro_mobile/Controller/SecureStorage.dart';
 
-import '../Model/fukuro_request.dart';
+import 'fukuro_request.dart';
 import 'package:http/http.dart' as http;
 
 Future<bool> verifyToken() async {
