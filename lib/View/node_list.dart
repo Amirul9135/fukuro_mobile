@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/node_controller.dart';
 import 'package:fukuro_mobile/Model/node.dart';
-import 'package:fukuro_mobile/View/Component/Monitoring/node_item.dart';
+import 'package:fukuro_mobile/View/Component/Node/node_item.dart';
 
 class NodeList extends StatefulWidget {
   const NodeList({Key? key}) : super(key: key);

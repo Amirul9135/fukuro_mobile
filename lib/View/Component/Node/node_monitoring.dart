@@ -1,18 +1,20 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:fukuro_mobile/Controller/monitoring_preference.dart';
 import 'package:fukuro_mobile/Model/node.dart';
-import 'package:fukuro_mobile/View/Component/Monitoring/cpu_chart.dart';
+import 'package:fukuro_mobile/View/Component/Node/cpu_chart.dart';
 import 'package:web_socket_channel/io.dart';
 import '../../../Controller/fukuro_request.dart';
 import '../../../Model/cpu_usage.dart';
 import '../Misc/fukuro_dialog.dart';
 
 class NodeMonitoring extends StatefulWidget {
-  const NodeMonitoring({Key? key, required this.thisnode, required this.parentController,required this.fallback}) : super(key: key);
+  const NodeMonitoring({Key? key, required this.thisnode, required this.parentController,required this.fallback,required this.config}) : super(key: key);
   final Node thisnode;
   final TabController parentController;
   final int fallback;
+  final CPULocalConfig config;
   @override
   NodeMonitoringState createState() => NodeMonitoringState();
 }
@@ -46,6 +48,8 @@ class NodeMonitoringState extends State<NodeMonitoring> {
       user: Colors.green,
       interrupt: Colors.yellow,
       highlight: Colors.red,
+      duration: widget.config.values["RTPeriod"],
+      threshold: double.parse(widget.config.values["HTThreshold"].toString()) ,
     );
 
     return CustomScrollView(
@@ -94,6 +98,7 @@ class NodeMonitoringState extends State<NodeMonitoring> {
       print(msg);
       return;
     }
+    print(data);
     if (data.containsKey("error")) {
       showDialog(
           context: context,
@@ -104,8 +109,7 @@ class NodeMonitoringState extends State<NodeMonitoring> {
       widget.parentController.animateTo(widget.fallback);
       return;
     }
-    if(data.containsKey("warning")){
-      print(data);
+    if(data.containsKey("warning")){ 
       showDialog(
           context: context,
           builder: (_) => FukuroDialog(
@@ -116,16 +120,8 @@ class NodeMonitoringState extends State<NodeMonitoring> {
       return;
 
     }
-    if(data.containsKey("cpu")){
-      Map<String, List<CpuUsage>> cpuData = {};
-      for(var item in data["cpu"]){
-        if (!cpuData.containsKey(item["label"])) {
-          cpuData[item["label"]] = [];
-        } 
-        cpuData[item["label"]]!.add(CpuUsage.fromJson(item));
-      } 
-      cpuchartKey.currentState?.addDataList(cpuData["cpu"]??[]);
+    if(data.containsKey("cpu")){  
+      cpuchartKey.currentState?.addData(CpuUsage.fromJson(data["cpu"]));
     }
-    print(data);
   }
 }

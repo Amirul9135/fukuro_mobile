@@ -7,10 +7,11 @@ AndroidOptions _getAndroidOptions() => const AndroidOptions(
 class SecureStorage {
   final FlutterSecureStorage storage =
       FlutterSecureStorage(aOptions: _getAndroidOptions());
-  Map<String, String> cache = {};
+  Map<String, dynamic> cache = {};
 
-  write(String key, String value) async {
-    await storage.write(key: key, value: value);
+  write(String key, dynamic value) async {
+    cache[key] = value.toString();
+    await storage.write(key: key, value: value.toString());
   }
 
   check(String key) async {
@@ -27,7 +28,7 @@ class SecureStorage {
         return cache[key];
       }
     }
-    cache[key] = await storage.read(key: key) ?? '';
+    cache[key] = await storage.read(key: key) ;
     return cache[key];
   }
  

@@ -1,24 +1,23 @@
 class CpuUsage { 
   //node id altered due to unnecessary  in front end
-  DateTime _dateTime = DateTime.now();
-  String _label = "";
+  DateTime _dateTime = DateTime.now(); 
   double _user = 0;
   double _interrupt = 0;
   double _system = 0;
   double _total = 0;
 
-  CpuUsage.fromJson(Map<String, dynamic> json) { 
-    _label = json["label"]??'';
-    _user = json["user"].toDouble();
-    _interrupt = json["interrupt"].toDouble();
-    _system = json["system"].toDouble();
+  CpuUsage.fromJson(Map<String, dynamic> json) {  
+    
+    _user = json["user"].toDouble(); 
+    _interrupt = json["interrupt"].toDouble(); 
+    _system = json["system"].toDouble(); 
 
     if (json.containsKey("interval_group")) {
       _dateTime = DateTime.parse(json["interval_group"]);
     }
     if (json.containsKey("dateTime")) {
       _dateTime = DateTime.parse(json["dateTime"]);
-    }
+    } 
     _sumUsage();
   }
 
@@ -30,11 +29,7 @@ class CpuUsage {
   set dateTime(DateTime value) {
     _dateTime = value;
   }
-
-  String get label => _label;
-  set label(String value) {
-    _label = value;
-  }
+ 
 
   double get user => _user;
   set user(double value) {

@@ -15,23 +15,19 @@ Future<List<Node>> fetchAllUserOwnedNodes() async {
   }
 }
 
-Future<Map<String, List<CpuUsage>>> fetchAllReading(
-    int nodeId, int period) async {
-  FukuroRequest req = FukuroRequest("node/cpu/$nodeId?p=$period");
-  http.Response res = await req.get();
-  Map<String , List<CpuUsage>> data = {};
+Future<List<CpuUsage>> fetchAllReading(
+    int nodeId, int period,int interval) async {
+  FukuroRequest req = FukuroRequest("node/cpu/$nodeId?dur=$period&int=$interval");
+  http.Response res = await req.get(); 
+  List<CpuUsage> cpudata = [];
   if (res.statusCode == 200) {
-    List<dynamic> jsonList = json.decode(res.body);  
-    for(var item in jsonList){
-      if (!data.containsKey(item["label"])) {
-        data[item["label"]] = [];
-    } 
-    data[item["label"]]!.add(CpuUsage.fromJson(item));
+    List<dynamic>  dataList = json.decode(res.body);
+    for(var item in dataList){
+      cpudata.add(CpuUsage.fromJson(item));
     } 
      
   }
-
-  return data;
+  return cpudata;
 }
 
 Future<bool> checkAccessToNode(Node node)async {

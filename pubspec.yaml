@@ -41,6 +41,8 @@ dependencies:
   syncfusion_flutter_charts: ^21.2.10
   intl: ^0.18.1
   web_socket_channel: ^2.4.0
+  omni_datetime_picker: ^1.0.7
+  expansion_tile_group: ^1.2.1
 
 dev_dependencies:
   flutter_test:

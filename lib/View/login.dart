@@ -1,4 +1,5 @@
 
+import 'package:fukuro_mobile/Controller/fukuro_request.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/register.dart';
  
@@ -199,11 +200,11 @@ class __FormContentState extends State<_FormContent> {
                 ),
                 onPressed: () async {
                   if (_formKey.currentState?.validate() ?? false) {
-                    /// do something
-                    ///
+                    /// do something 
+                    print(FukuroRequest.getApiUrl()+ 'user/login');
 
                     http.Response response = await http.post(
-                      Uri.parse('http://10.0.2.2:5000/api/user/login'),
+                      Uri.parse(FukuroRequest.getApiUrl()+ 'user/login'),
                       headers: <String, String>{
                         'Content-Type': 'application/json; charset=UTF-8',
                       },

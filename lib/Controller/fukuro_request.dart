@@ -8,9 +8,14 @@ class FukuroRequest {
   final Map<String, dynamic> _body = {};
   final Map<String, String> _headers = {};
 
-  static String _fukuroUrl = "http://10.0.2.2:5000/api/";
-  static String wsfukuroUrl = "ws://10.0.2.2:5000";
-
+//  static String _fukuroUrl = "http://10.0.2.2:5000/api/";
+ // static String wsfukuroUrl = "ws://10.0.2.2:5000";
+  
+  static String _fukuroUrl = "http://192.168.8.102:5000/api/";
+  static String wsfukuroUrl = "ws://192.168.8.102:5000";
+  static String getApiUrl(){
+    return _fukuroUrl;
+  }
   String _path = "";
   
   SecureStorage storage = SecureStorage();
