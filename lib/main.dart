@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Node/node_resource_screen.dart';
+import 'package:fukuro_mobile/View/app_setting.dart';
 import 'package:fukuro_mobile/View/home.dart';
 import 'package:fukuro_mobile/View/node_main.dart';
 import 'package:fukuro_mobile/View/register.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'View/login.dart';
 import 'package:sizer/sizer.dart'; 
+//import 'package:dcdg/dcdg.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,7 +54,8 @@ class MyApp extends StatelessWidget {
         },
       routes: {
         '/': (context) => const Login(),
-        '/register': (context) => const Register()
+        '/register': (context) => const Register(),
+        '/setting': (context) => const AppSettingScreen()
       },
       );
     }); 

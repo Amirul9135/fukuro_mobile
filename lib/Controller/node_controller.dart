@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fukuro_mobile/Model/cpu_usage.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'dart:convert';
@@ -15,12 +17,27 @@ Future<List<Node>> fetchAllUserOwnedNodes() async {
   }
 }
 
-Future<List<CpuUsage>> fetchAllReading(
+Future<List<CpuUsage>> fetchHistoricalReading(
     int nodeId, int period,int interval) async {
   FukuroRequest req = FukuroRequest("node/cpu/$nodeId?dur=$period&int=$interval");
-  http.Response res = await req.get(); 
+  http.Response res = await req.get(timeout: 40); 
+  
+  print(res);
+  print(res.statusCode);
   List<CpuUsage> cpudata = [];
+  if(res.statusCode == 523){
+    
+      Fluttertoast.showToast(
+          msg: "Request takes too long, consider reconfiguring period and interval",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+  }
   if (res.statusCode == 200) {
+    
     List<dynamic>  dataList = json.decode(res.body);
     for(var item in dataList){
       cpudata.add(CpuUsage.fromJson(item));

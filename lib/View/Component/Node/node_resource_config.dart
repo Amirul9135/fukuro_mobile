@@ -148,7 +148,7 @@ class NodeResourceConfigState extends State<NodeResourceConfig> {
                   )
                 ],
               ),
-              children: [nodeSettingForm],
+              children: [/*nodeSettingForm*/],
             ),
           ],
         ),

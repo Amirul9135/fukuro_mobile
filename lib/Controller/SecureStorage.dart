@@ -17,9 +17,8 @@ class SecureStorage {
   check(String key) async {
     if(cache.containsKey(key)){
       return true;
-    } 
-    bool has = await storage.containsKey(key: key);
-    return has;
+    }  
+    return await storage.containsKey(key: key);
   }
 
   read(String key) async {
@@ -34,6 +33,9 @@ class SecureStorage {
  
 
   clearValue(String key) async {
+    if (cache.containsKey(key)) {
+      cache.remove(key);
+    }
     await storage.delete(key: key);
   }
 }

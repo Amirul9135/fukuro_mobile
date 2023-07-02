@@ -29,7 +29,8 @@ class _LoginState extends State<Login> {
     WidgetsBinding.instance
         .addPostFrameCallback((_) async {  
           _verified = await verifyToken();
-          _isInitialized = true; 
+          _isInitialized = true;  
+          print("verifised$_verified");
             setState(() {
               
             });

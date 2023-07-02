@@ -90,7 +90,9 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
               icon: const Icon(Icons.logout),
             ),
             ActionButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/setting', (route) => false);},
               icon: const Icon(Icons.settings),
             ),
             ActionButton(

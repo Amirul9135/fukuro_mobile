@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fukuro_mobile/Controller/monitoring_preference.dart';
+import 'package:fukuro_mobile/Controller/cpu_local_config.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/Component/Node/node_history.dart';

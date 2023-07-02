@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:fukuro_mobile/Controller/monitoring_preference.dart';
+import 'package:fukuro_mobile/Controller/cpu_local_config.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Node/cpu_chart.dart';
 import 'package:web_socket_channel/io.dart';
@@ -48,7 +48,7 @@ class NodeMonitoringState extends State<NodeMonitoring> {
       user: Colors.green,
       interrupt: Colors.yellow,
       highlight: Colors.red,
-      duration: widget.config.values["RTPeriod"],
+      duration: int.parse( widget.config.values["RTPeriod"].toString()),
       threshold: double.parse(widget.config.values["HTThreshold"].toString()) ,
     );
 

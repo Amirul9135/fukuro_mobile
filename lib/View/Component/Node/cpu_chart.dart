@@ -53,7 +53,10 @@ class CpuChartState extends State<CpuChart> {
   }
 
   setNoData() {
-    noData = true;
+    setState(() {
+      noData = true;
+      
+    });
   }
 
   setDuration(int sec) {
@@ -83,7 +86,7 @@ class CpuChartState extends State<CpuChart> {
   Widget build(BuildContext context) {
     final double maxHeight =
         MediaQuery.of(context).size.height - AppBar().preferredSize.height;
-    if (_data.isEmpty) {
+    if (_data.isEmpty && !noData) {
       return Center(
         child: Stack(
           alignment: Alignment.center,
@@ -138,8 +141,7 @@ class CpuChartState extends State<CpuChart> {
             primaryYAxis: NumericAxis(
               enableAutoIntervalOnZooming: true,
               axisLine: const AxisLine(width: 1), // Customize the axis line
-              minimum: 0,
-              maximum: widget.threshold ,
+              minimum: 0, 
               majorGridLines: MajorGridLines(
                   width: 1,
                   color: widget.mainColor

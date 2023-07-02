@@ -22,18 +22,14 @@ class CPULocalConfig {
       _values["HTThreshold"] = val["HTThreshold"];
       await storage.write("HTThreshold", val["HTThreshold"]);
     }
-    if (val.containsKey('HTExtractInterval')) {
-      _values["HTExtractInterval"] = val["HTExtractInterval"];
-   //   storage.write("HTExtractInterval", val["HTExtractInterval"]); //////
-    }
+ 
   }
 
   load() async {
     values["RTPeriod"] = await storage.read("RTPeriod") ?? 60;
     values["HTPeriod"] = await storage.read("HTPeriod") ?? 3600;
     values["HTInterval"] = await storage.read("HTInterval") ?? 15;
-    values["HTThreshold"] = await storage.read("HTThreshold") ?? 80;
-    values["HTExtractInterval"] = await storage.read("HTExtractInterval") ?? 10; /////
+    values["HTThreshold"] = await storage.read("HTThreshold") ?? 80; 
   }
  
 
