@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Model/node.dart';
+import 'package:fukuro_mobile/View/Component/Node/node_details.dart';
 import 'package:fukuro_mobile/View/Component/Node/node_resource_screen.dart';
 
 class NodeMainScreen extends StatefulWidget {
@@ -11,7 +12,7 @@ class NodeMainScreen extends StatefulWidget {
 }
 
 class NodeMainScreenState extends State<NodeMainScreen> {
-  String _selectedMenuItem = 'Home';
+  String _selectedMenuItem = 'Node';
 
   void _selectMenuItem(String title) {
     setState(() {
@@ -22,6 +23,7 @@ class NodeMainScreenState extends State<NodeMainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.thisNode.getNodeId());
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.thisNode.getName()),
@@ -80,7 +82,7 @@ class NodeMainScreenState extends State<NodeMainScreen> {
             ],
           ),
         ),
-        body: _selectedMenuItem == 'Home' ? Text("home")
+        body: _selectedMenuItem == 'Node' ?  NodeDetails(node: widget.thisNode)
             : _selectedMenuItem == 'Settings' ? Text('setting')
             : _selectedMenuItem == 'Res_CPU' ? NodeResourceScreen(thisNode: widget.thisNode)
                 : Text("placeholder"));

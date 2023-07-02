@@ -1,4 +1,7 @@
+import 'package:fukuro_mobile/Controller/fukuro_request.dart';
+
 import '../Controller/SecureStorage.dart';
+import 'package:http/http.dart' as http;
 
 class Node {
   int _nodeId = 0;
@@ -23,6 +26,29 @@ class Node {
       'ipAddress': _ipAddress,
       'passKey': _passKey,
     };
+  }
+
+  Future<bool> submitToServer() async {
+    FukuroRequest req = FukuroRequest("node");
+    req.addBody(toJson());
+    http.Response res = await req.post();
+ 
+    if (res.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> saveToServer() async {
+    FukuroRequest req = FukuroRequest("node");
+    req.addBody(toJson());
+    http.Response res = await req.put();
+    print(_nodeId);
+ 
+    if (res.statusCode == 200) {
+      return true;
+    }
+    return false;
   }
 
   int getNodeId() {

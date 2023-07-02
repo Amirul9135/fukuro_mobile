@@ -1,5 +1,5 @@
-
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
+import 'package:fukuro_mobile/View/Component/node_form.dart';
 import 'package:fukuro_mobile/View/node_list.dart';
 import 'package:fukuro_mobile/View/Component/Misc/expandable_fab.dart';
 import 'package:fukuro_mobile/Controller/Authentication.dart';
@@ -68,8 +68,8 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
             SliverFillRemaining(
               child: TabBarView(
                 controller: _tabController,
-                children: const [
-                  Text("dashboar"),
+                children: [
+                  NodeForm(),
                   NodeList(),
                   Text("notification"),
                 ],
@@ -77,30 +77,43 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
             ),
           ],
         ),
-        floatingActionButton: ExpandableFab(
-          icon: const Icon(Icons.settings),
-          distance: 100,
-          children: [
-            ActionButton(
-              onPressed: () async {
-                await logOut();
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/', (route) => false);
-              },
-              icon: const Icon(Icons.logout),
-            ),
-            ActionButton(
-              onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/setting', (route) => false);},
-              icon: const Icon(Icons.settings),
-            ),
-            ActionButton(
-              onPressed: () {},
-              icon: const Icon(Icons.person),
-            ),
-          ],
-        ),
+        floatingActionButton: (_tabController.index == 1)
+            ? FloatingActionButton(
+                child: Icon(Icons.add_outlined),
+                onPressed: () {
+                  // Action to perform when the button is pressed
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, '/node/register', (route) => false);
+                },
+
+                hoverColor: Colors.blue, // Optional: Change the hover color
+                hoverElevation: 10, // Optional: Adjust the elevation on hover
+              )
+            : ExpandableFab(
+                icon: const Icon(Icons.settings),
+                distance: 100,
+                children: [
+                  ActionButton(
+                    onPressed: () async {
+                      await logOut();
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, '/', (route) => false);
+                    },
+                    icon: const Icon(Icons.logout),
+                  ),
+                  ActionButton(
+                    onPressed: () {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, '/setting', (route) => false);
+                    },
+                    icon: const Icon(Icons.settings),
+                  ),
+                  ActionButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.person),
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -113,7 +126,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
 const _tabs = [
   Tab(icon: Icon(Icons.dashboard_rounded), text: "Dashboard"),
-  Tab(icon: Icon(Icons.monitor_heart_rounded), text: "Monitoring"),
+  Tab(icon: Icon(Icons.monitor_heart_rounded), text: "Nodes"),
   Tab(icon: Icon(Icons.circle_notifications), text: "Notifications"),
 ];
 

@@ -153,7 +153,7 @@ class FukuroFormState extends State<FukuroForm> {
                 }
               } else {
                 int val = value?.length ?? 0;
-                if (lengthMax != null && lengthMin != null) {
+                if (lengthMax != null || lengthMin != null) {
                   if (val <= lengthMax && val >= lengthMin) {
                     return null;
                   } else if (lengthMax != null && val <= lengthMax) {
@@ -161,6 +161,9 @@ class FukuroFormState extends State<FukuroForm> {
                   } else if (lengthMin != null && val >= lengthMin) {
                     return null;
                   }
+                }
+                else{
+                  return null;
                 }
               }
 

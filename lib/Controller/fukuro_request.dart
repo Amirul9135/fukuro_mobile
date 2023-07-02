@@ -64,6 +64,27 @@ class FukuroRequest {
     }
   }
 
+  
+  put({int? timeout}) async {
+    await _loadToken();
+    if (_body.isNotEmpty) {
+      addHeader(<String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      });
+    }
+    try {
+      return await http
+          .put(
+            Uri.parse(FukuroRequest._fukuroUrl + _path),
+            headers: _headers,
+            body: jsonEncode(_body),
+          )
+          .timeout(Duration(seconds: timeout ?? 30));
+    } catch (e) {
+      return http.Response("unreached", 523);
+    }
+  }
+
   get({int? timeout}) async {
     await _loadToken();
     print(_headers);

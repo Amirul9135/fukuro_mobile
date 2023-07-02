@@ -50,7 +50,7 @@ Future<List<CpuUsage>> fetchHistoricalReading(
 Future<bool> checkAccessToNode(Node node)async {
   FukuroRequest req = FukuroRequest("node/access");
   req.setBody(node.toJson());
-  http.Response  res = await req.post();
+  http.Response  res = await req.post(); 
   if(res.statusCode == 200){
     return true;
   }
