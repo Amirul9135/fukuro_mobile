@@ -8,12 +8,13 @@ class FukuroRequest {
   final Map<String, dynamic> _body = {};
   final Map<String, String> _headers = {};
 
-//  static String _fukuroUrl = "http://10.0.2.2:5000/api/";
-  // static String wsfukuroUrl = "ws://10.0.2.2:5000";
+  //static String _fukuroUrl = "http://10.0.2.2:5000/api/";
+  //static String wsfukuroUrl = "ws://10.0.2.2:5000";
 
   static String _fukuroUrl = "http://192.168.8.102:5000/api/";
   static String wsfukuroUrl = "ws://192.168.8.102:5000";
   static String getApiUrl() {
+    
     return _fukuroUrl;
   }
 
@@ -101,4 +102,44 @@ class FukuroRequest {
       return http.Response("unreached", 523);
     }
   }
+  del({int? timeout}) async {
+    await _loadToken();
+    print(_headers);
+    try {
+      return await http
+          .delete(
+            Uri.parse(FukuroRequest._fukuroUrl + _path),
+            headers: _headers,
+          )
+          .timeout(Duration(
+              seconds: timeout ??
+                  30)); //set timeout if specified or default 30 second
+    } catch (e) {
+      return http.Response("unreached", 523);
+    }
+  }
+}
+
+class FukuroResponse{
+  http.Response res;
+  dynamic _body;
+  FukuroResponse({required this.res}){
+    print('body $res');
+    try{
+    _body = jsonDecode(res.body); 
+
+    }catch(E){
+
+    }
+    print('body $_body');
+  }
+  status(){
+    return res.statusCode;
+  }
+  body(){
+    return _body;
+  }
+
+
+
 }

@@ -5,13 +5,13 @@ import 'package:fukuro_mobile/View/app_setting.dart';
 import 'package:fukuro_mobile/View/home.dart';
 import 'package:fukuro_mobile/View/node_main.dart';
 import 'package:fukuro_mobile/View/node_register.dart';
-import 'package:fukuro_mobile/View/register.dart';
+import 'package:fukuro_mobile/View/register.dart'; 
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'View/login.dart';
 import 'package:sizer/sizer.dart'; 
 //import 'package:dcdg/dcdg.dart';
 
-void main() {
+void main() { 
   runApp(const MyApp());
 }
 

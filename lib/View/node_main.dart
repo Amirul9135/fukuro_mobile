@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fukuro_mobile/Controller/utilities.dart';
 import 'package:fukuro_mobile/Model/node.dart';
+import 'package:fukuro_mobile/View/Component/Node/config/node_config_form.dart';
+import 'package:fukuro_mobile/View/Component/Node/config/node_config_screen.dart';
 import 'package:fukuro_mobile/View/Component/Node/node_details.dart';
 import 'package:fukuro_mobile/View/Component/Node/node_resource_screen.dart';
 
@@ -36,20 +39,53 @@ class NodeMainScreenState extends State<NodeMainScreen> {
                 decoration: const BoxDecoration(
                   color: Colors.blue,
                 ),
-                child: Text(
+                child: Column( 
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                  Text(
                   widget.thisNode.getName(),
+                  textAlign: TextAlign.left,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
                   ),
                 ),
+                verticalGap(20),
+                Text(
+                  widget.thisNode.getDescription(),
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
+                ),
+                ],)
               ), 
               ListTile(
                 leading: const Icon(Icons.connected_tv_outlined),
-                title: const Text('Node'),
+                title: const Text('Node Details'),
                 onTap: () => _selectMenuItem('Node'),
                 selected: _selectedMenuItem == 'Node',
+              ),  
+              ListTile(
+                leading: const Icon(Icons.monitor_heart_outlined),
+                title: const Text('Connect Realtime'),
+                onTap: () => _selectMenuItem('Monitoring_Config'),
+                selected: _selectedMenuItem == 'Monitoring_Config',
+              ),
+              ListTile(
+                leading: const Icon(Icons.auto_graph_outlined),
+                title: const Text('Reports'),
+                onTap: () => _selectMenuItem('Monitoring_Config'),
+                selected: _selectedMenuItem == 'Monitoring_Config',
               ), 
+              const Divider(), 
+              ListTile(
+                leading: const Icon(Icons.display_settings_outlined),
+                title: const Text('Configuration'),
+                onTap: () => _selectMenuItem('Node_Config'),
+                selected: _selectedMenuItem == 'Node_Config',
+              ),    
               const Divider(),
               Container(
                 padding:
@@ -69,8 +105,8 @@ class NodeMainScreenState extends State<NodeMainScreen> {
                 onTap: () => _selectMenuItem('Res_CPU'),
                 selected: _selectedMenuItem == 'Res_CPU',
               ),
-              const Spacer(),
               const Divider(),
+              const Spacer(),
               ListTile(
                 leading:const Icon(Icons.exit_to_app),
                 title: const Text('Back to Home'),
@@ -85,6 +121,7 @@ class NodeMainScreenState extends State<NodeMainScreen> {
         body: _selectedMenuItem == 'Node' ?  NodeDetails(node: widget.thisNode)
             : _selectedMenuItem == 'Settings' ? Text('setting')
             : _selectedMenuItem == 'Res_CPU' ? NodeResourceScreen(thisNode: widget.thisNode)
+            : _selectedMenuItem == 'Node_Config' ? NodeConfigScreen(node: widget.thisNode,)
                 : Text("placeholder"));
   }
 }

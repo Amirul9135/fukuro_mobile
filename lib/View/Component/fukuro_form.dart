@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fukuro_mobile/Controller/fukuro_editor_controller.dart';
@@ -56,66 +58,95 @@ class FukuroForm extends StatefulWidget {
 
 class FukuroFormState extends State<FukuroForm> {
   final _formKey = GlobalKey<FormState>();
-
+  
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    // Initialize your state here
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) { 
     return Form(
       key: _formKey,
       child: Column(
         children: widget.fields.entries.map((entry) {
+
           // final String key = entry.key;
           final fieldConfig = entry.value;
           final displayName = fieldConfig['fieldName'] ?? '';
-          final FukuroEditorController controller =
-              fieldConfig['controller'] ?? FukuroEditorController();
-          final hintText = fieldConfig['hint'] ?? ' ';
-          final help = fieldConfig['help'] ?? '';
-          final type = fieldConfig['type'] ?? 0;
-          final validator = fieldConfig['validator'];
-          final icon = fieldConfig['icon'];
-          // final value = fieldConfig['value'];
-          final numMin = fieldConfig['numMin'];
-          final numMax = fieldConfig['numMax'];
-          final lengthMin = fieldConfig['lengthMin'];
-          final lengthMax = fieldConfig['lengthMax'];
           final error = fieldConfig['error'] ?? 'Invalid $displayName';
-          final String prefix = fieldConfig['prefix'] ?? '';
-          final bool isTimeUnit = fieldConfig['isTimeUnit'] ?? false;
-          final bool right = fieldConfig['rightAllign'] ?? false;
-          if (isTimeUnit && controller.timeUnit == null) {
-            controller.timeUnit = TimeUnit.second;
+          if( fieldConfig['controller'] == null ){
+             fieldConfig['controller'] = FukuroEditorController();
+          }     
+          // final value = fieldConfig['value'];         
+
+          if ((fieldConfig['isTimeUnit'] ?? false)  && fieldConfig['controller'].timeUnit == null) {
+            fieldConfig['controller'].timeUnit = TimeUnit.second;
+          } 
+          if(fieldConfig['refresh'] != null){ 
+            
+           fieldConfig['controller'].text = (fieldConfig['value']??'').toString();
+           fieldConfig['refresh'] = null;
+
+          }
+          if(fieldConfig['focus'] == null){
+            fieldConfig['focus'] = FocusNode();
+            fieldConfig['focus'].addListener((){
+              if(mounted){
+                setState(() {
+                  
+                });
+
+              }
+            });
           }
 
-          final isDate = (type == FukuroForm.inputDate ||
-              type == FukuroForm.inputDateTime);
+          final isDate = ((fieldConfig['type']??0 )== FukuroForm.inputDate ||
+              (fieldConfig['type']??0)  == FukuroForm.inputDateTime);
+        
           String dtFormat = isDate ? "yyyy-MM-dd HH:mm" : "HH:mm";
           dtFormat = fieldConfig['dtFormat'] ?? dtFormat;
+
           DateTime? dtInit = fieldConfig['dtInit'];
           DateTime? dtMin = fieldConfig['dtMin'];
-
-          return TextFormField(
-            controller: controller,
+          return    TextFormField( 
+            focusNode: fieldConfig['focus'] ,
+            readOnly:( fieldConfig['readOnly']  ?? false),
+            controller: fieldConfig['controller'],
             onChanged: (evt) {
               setState(() {});
             },
-            textAlign: (right) ? TextAlign.right : TextAlign.left,
-            keyboardType: _getInputType(type),
+            textAlign: (fieldConfig['rightAllign'] ?? false) ? TextAlign.right : TextAlign.left,
+            keyboardType: _getInputType(fieldConfig['type']?? 0),
             inputFormatters: _genFormatter(fieldConfig),
             decoration: InputDecoration(
-              labelText: (prefix.isNotEmpty && controller.text.isNotEmpty)
-                  ? ''
-                  : displayName,
+              labelText: ((){ 
+                if((fieldConfig['prefix']??'').isNotEmpty && fieldConfig['controller'].text.isNotEmpty){
+                  return '';
+                }
+                else if((fieldConfig['prefix']??'').isNotEmpty && fieldConfig['focus'].hasFocus){
+                   return '';
+                }
+                return fieldConfig['fieldName']?? '';
+              })(), 
               labelStyle: const TextStyle(fontSize: 18),
-              hintText: hintText,
-              helperText: help,
-              prefixIcon: icon,
-              suffix: (isTimeUnit)
-                  ? _timeUnitButton(controller, fieldConfig)
-                  : null,
+              hintText: fieldConfig['hint']??'',
+              helperText:  fieldConfig['help']?? '',
+              prefixIcon: fieldConfig['icon'],
+              suffix: (fieldConfig['isTimeUnit'] ?? false)
+                  ? _timeUnitButton(fieldConfig)
+                  : ((fieldConfig['suffix'] ??'').isNotEmpty)
+                      ? Text(
+                          (fieldConfig['suffix'] ?? ''),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 0, 102, 150)),
+                        )
+                      : null,
               prefix: Container(
                 padding: EdgeInsets.only(right: 1.w),
                 child: Text(
-                  prefix,
+                  ( fieldConfig['prefix']??''),
                   style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Color.fromARGB(255, 0, 102, 150)),
@@ -125,44 +156,43 @@ class FukuroFormState extends State<FukuroForm> {
             ),
             onTap: isDate
                 ? () => _selectDate(
-                    context, type, controller, dtFormat, dtInit, dtMin)
-                : (type == FukuroForm.inputTime)
-                    ? () => _selectTime(context, controller, dtFormat)
+                    context, (fieldConfig['type']??0), fieldConfig['controller'], dtFormat, dtInit, dtMin)
+                : ((fieldConfig['type']??0 )== FukuroForm.inputTime)
+                    ? () => _selectTime(context, fieldConfig['controller'], dtFormat)
                     : null,
             validator: (value) {
-              if (validator != null) {
-                if (value != null && RegExp(validator).hasMatch(value)) {
+              if (fieldConfig['validator'] != null) {
+                if (value != null && RegExp(fieldConfig['validator']).hasMatch(value)) {
                   return null;
                 }
               }
-              if (type == FukuroForm.inputNumerical) {
+              if ((fieldConfig['type']??0) == FukuroForm.inputNumerical) {
                 int val = int.tryParse(value ?? '0') ?? 0;
-                if (numMax != null && numMin != null) {
-                  if (val <= numMax && val >= numMin) {
+                if (fieldConfig['numMax'] != null && fieldConfig['numMin'] != null) {
+                  if (val <= fieldConfig['numMax'] && val >= fieldConfig['numMin']) {
                     return null;
                   }
                 } else {
-                  if (numMax != null && val <= numMax) {
+                  if (fieldConfig['numMax'] != null && val <= fieldConfig['numMax']) {
                     return null;
-                  } else if (numMin != null && val >= numMin) {
+                  } else if (fieldConfig['numMin'] != null && val >= fieldConfig['numMin']) {
                     return null;
                   }
-                  if (numMax == null && numMin == null) {
+                  if (fieldConfig['numMax'] == null && fieldConfig['numMin'] == null) {
                     return null;
                   }
                 }
               } else {
                 int val = value?.length ?? 0;
-                if (lengthMax != null || lengthMin != null) {
-                  if (val <= lengthMax && val >= lengthMin) {
+                if (fieldConfig['lengthMax'] != null || fieldConfig['lengthMin'] != null) {
+                  if (val <= fieldConfig['lengthMax'] && val >= fieldConfig['lengthMin']) {
                     return null;
-                  } else if (lengthMax != null && val <= lengthMax) {
+                  } else if (fieldConfig['lengthMax'] != null && val <= fieldConfig['lengthMax']) {
                     return null;
-                  } else if (lengthMin != null && val >= lengthMin) {
+                  } else if (fieldConfig['lengthMin'] != null && val >= fieldConfig['lengthMin']) {
                     return null;
                   }
-                }
-                else{
+                } else {
                   return null;
                 }
               }
@@ -173,6 +203,12 @@ class FukuroFormState extends State<FukuroForm> {
         }).toList(),
       ),
     );
+  }
+
+  void toggleLockAll(lock) {
+    widget.fields.forEach((key, value) {
+      value['readOnly'] = lock;
+    });
   }
 
   bool validateForm() {
@@ -251,20 +287,27 @@ class FukuroFormState extends State<FukuroForm> {
     }
   }
 
-  _timeUnitButton(FukuroEditorController controller, fieldConfig) {
+  _timeUnitButton(fieldConfig) {
     return PopupMenuButton<TimeUnit>(
-      initialValue: controller.timeUnit ?? TimeUnit.second,
+      initialValue: fieldConfig['controller'].timeUnit ?? TimeUnit.second,
       child: Text(
-        timeUnitNAme(controller.timeUnit ?? TimeUnit.second),
+        timeUnitNAme(fieldConfig['controller'].timeUnit ?? TimeUnit.second),
         style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: Color.fromARGB(255, 0, 102, 150)),
       ),
       onSelected: (unit) {
-        controller.text = convertVal(int.tryParse(controller.text) ?? 0,
-                controller.timeUnit ?? TimeUnit.second, unit)
-            .toString();
-        controller.timeUnit = unit;
+        //always save in second  
+        int tmpval = convertVal(int.tryParse(fieldConfig['controller'].text)?? 0,
+                  fieldConfig['controller'].timeUnit ?? TimeUnit.second, unit);
+        if (tmpval != 0 ){ 
+          //display selected unit
+          fieldConfig['controller'].text =  tmpval.toString();
+          print('dlm fffor');
+          print(fieldConfig);
+          fieldConfig['value'] = convertVal(tmpval,unit,TimeUnit.second);
+        } 
+        fieldConfig['controller'].timeUnit = unit; 
 
         setState(() {});
       },
@@ -294,10 +337,11 @@ class FukuroFormState extends State<FukuroForm> {
 
 class FukuroFormFieldBuilder {
   final String fieldName;
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final int type;
   final String? validator;
   final Icon? icon;
+  final String? help;
   final String? prefix;
   final String? value;
   final String? format;
@@ -310,10 +354,12 @@ class FukuroFormFieldBuilder {
   final DateTime? dtMin;
   final bool? isTimeUnit;
   final bool? rightAllign;
+  final bool? readOnly;
+  final String? suffix;
 
   FukuroFormFieldBuilder(
       {required this.fieldName,
-      required this.controller,
+      this.controller,
       required this.type,
       this.prefix,
       this.validator,
@@ -328,7 +374,10 @@ class FukuroFormFieldBuilder {
       this.dtInit,
       this.dtMin,
       this.isTimeUnit,
-      this.rightAllign});
+      this.rightAllign,
+      this.readOnly,
+      this.help,
+      this.suffix});
 
   Map<String, dynamic> build() {
     return {
@@ -346,7 +395,10 @@ class FukuroFormFieldBuilder {
       'lengthMax': lengthMax,
       'dtFormat': dtFormat,
       'isTimeUnit': isTimeUnit,
-      'rightAllign': rightAllign
+      'rightAllign': rightAllign,
+      'readOnly': readOnly,
+      'help': help,
+      'suffix': suffix
     };
   }
 }

@@ -70,3 +70,7 @@ String timeUnitNAme(TimeUnit unit) {
       return '';
   }
 }
+
+String censorString(String inp){ 
+  return '*' * inp.length;
+}

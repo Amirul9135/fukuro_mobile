@@ -133,6 +133,24 @@ class FukuroDialog extends StatelessWidget {
     ),);
     }
 
+  static error(context,title,message){
+      showDialog(
+          context: context,
+          builder: (_) => FukuroDialog(
+                title: title,
+                message: message,
+                mode: FukuroDialog.ERROR, 
+              ));
+  }
+    static success(context,title,message){
+      showDialog(
+          context: context,
+          builder: (_) => FukuroDialog(
+                title: title,
+                message: message,
+                mode: FukuroDialog.SUCCESS, 
+              ));
+  }
   extraOkAction() {
     if (okAction != null) {
       okAction!();

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:fukuro_mobile/Controller/SecureStorage.dart';
-import 'package:fukuro_mobile/Controller/Authentication.dart';
+import 'package:fukuro_mobile/Controller/Authentication.dart'; 
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -18,17 +18,16 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   bool _verified = false; 
-  bool _isInitialized = false;
+  bool _isInitialized = false; 
  
   
    @override
    void initState() {
     // TODO: implement initState
     super.initState();
-    
     WidgetsBinding.instance
         .addPostFrameCallback((_) async {  
-          _verified = await verifyToken();
+          _verified = await Authentication.verifyToken();
           _isInitialized = true;  
           print("verifised$_verified");
             setState(() {
@@ -38,7 +37,7 @@ class _LoginState extends State<Login> {
             
             Navigator.pushNamed(context, '/home');
           } 
-        });
+        });  
   }
 
   @override

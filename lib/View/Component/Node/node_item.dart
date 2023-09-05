@@ -23,7 +23,7 @@ class NodeItem extends StatelessWidget {
             .then((value) async {
           if (wsConf.okpressed) {
             node.setPassKey(wsConf.getInputText());
-            if (await checkAccessToNode(node)) {
+            if (await NodeController.checkAccessToNode(node)) { 
               Navigator.pushNamed(context, '/node', arguments: node);
             } else {
               showDialog(
@@ -56,7 +56,7 @@ class NodeItem extends StatelessWidget {
                     fontSize: 25),
               ),
               Text(
-                node.getIpAddress(),
+                node.getDescription(),
                 style:
                     const TextStyle(fontStyle: FontStyle.italic, fontSize: 20),
               )

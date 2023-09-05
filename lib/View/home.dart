@@ -95,7 +95,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 children: [
                   ActionButton(
                     onPressed: () async {
-                      await logOut();
+                      await Authentication.logOut();
                       Navigator.pushNamedAndRemoveUntil(
                           context, '/', (route) => false);
                     },

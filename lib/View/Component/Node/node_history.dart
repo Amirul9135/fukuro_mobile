@@ -26,7 +26,7 @@ class NodeHistoryState extends State<NodeHistory> {
     super.initState();
     // Perform any initialization tasks here
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      data.addAll(await fetchHistoricalReading(
+      data.addAll(await NodeController.fetchHistoricalReading(
           widget.thisnode.getNodeId(),
           int.parse(widget.config.values["HTPeriod"].toString()),
           int.parse(widget.config.values["HTInterval"].toString()))) ; 

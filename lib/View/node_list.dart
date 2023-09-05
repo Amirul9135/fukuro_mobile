@@ -12,6 +12,7 @@ class NodeList extends StatefulWidget {
 class NodeListState extends State<NodeList> {
   // Define your state variables here
   final List<Node> _nodes = [];
+  bool ready = false;
 
   @override
   void initState() {
@@ -19,8 +20,9 @@ class NodeListState extends State<NodeList> {
     // Perform any initialization tasks here
      WidgetsBinding.instance
         .addPostFrameCallback((_) async {  
-          _nodes.clear();
-          _nodes.addAll(await fetchAllUserOwnedNodes());
+          _nodes.clear(); 
+          _nodes.addAll(await NodeController.fetchAllUserOwnedNodes());
+          ready = true;
           //loadData();
           setState(() {
             
@@ -31,10 +33,18 @@ class NodeListState extends State<NodeList> {
   @override
   Widget build(BuildContext context) {
     // Build your widget UI here
-    if(_nodes.isEmpty){
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+    if(_nodes.isEmpty  ){
+      if(!ready){
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      else{
+        return const Center(
+          child: Text("No Node registered"),
+        );
+
+      }
     }
     return CustomScrollView(
       slivers: [

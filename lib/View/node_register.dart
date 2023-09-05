@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fukuro_mobile/Controller/utilities.dart';
 import 'package:fukuro_mobile/View/Component/node_form.dart';
 import 'package:sizer/sizer.dart';
 
@@ -11,19 +12,20 @@ class NodeRegister extends StatefulWidget {
 class NodeRegisterState extends State<NodeRegister> {
   // Declare your variables and properties here
   final GlobalKey<NodeFormState> formStateKey = GlobalKey();
-  NodeForm form = NodeForm();
+  NodeForm form = NodeForm(); 
   @override
   void initState() {
     // Initialize your state here
-    super.initState();
+    super.initState(); 
   }
 
   @override
   Widget build(BuildContext context) {
+    
     // Build your widget tree here
     form = NodeForm(
       key: formStateKey,
-    );
+    );  
     return Scaffold(
         appBar: AppBar(
           title: Text('Register New Node'),leading: IconButton(
@@ -37,6 +39,7 @@ class NodeRegisterState extends State<NodeRegister> {
             padding: EdgeInsets.fromLTRB(5.w, 5.h, 5.w, 5.h),
             child: SingleChildScrollView(
                 child: Column(children: [
+                  verticalGap(20),
               form,
               SizedBox(
                 width: double.infinity,

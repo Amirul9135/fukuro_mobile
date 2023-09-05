@@ -1,12 +1,16 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-AndroidOptions _getAndroidOptions() => const AndroidOptions(
-      encryptedSharedPreferences: true,
-    );
+import 'package:flutter_secure_storage/flutter_secure_storage.dart'; 
 
 class SecureStorage {
-  final FlutterSecureStorage storage =
-      FlutterSecureStorage(aOptions: _getAndroidOptions());
+  static final FlutterSecureStorage storage =
+      FlutterSecureStorage(aOptions: AndroidOptions(encryptedSharedPreferences: true));
+  
+  SecureStorage._();
+  static final SecureStorage _instance = SecureStorage._();
+
+  factory SecureStorage(){
+    return _instance;
+  }
+
   Map<String, dynamic> cache = {};
 
   write(String key, dynamic value) async {

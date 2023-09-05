@@ -4,7 +4,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 //this emthod set the currently logged in user id into one signal external id to allow recieving notification
 class OneSignalController {
   static Future<bool> setExternalId() async {
-    int id = await getUserId();
+    int id = await Authentication.getUserId();
     if (id == -1) {
       return false;
     }
