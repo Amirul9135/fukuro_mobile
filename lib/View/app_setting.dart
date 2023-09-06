@@ -2,8 +2,7 @@ import 'package:expansion_tile_group/expansion_tile_group.dart';
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/OneSignal.dart';
 import 'package:fukuro_mobile/Model/app_setting.dart';
-import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart'; 
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 

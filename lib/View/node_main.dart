@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/utilities.dart';
-import 'package:fukuro_mobile/Model/node.dart';
-import 'package:fukuro_mobile/View/Component/Node/config/node_config_form.dart';
+import 'package:fukuro_mobile/Model/node.dart'; 
 import 'package:fukuro_mobile/View/Component/Node/config/node_config_screen.dart';
 import 'package:fukuro_mobile/View/Component/Node/node_details.dart';
 import 'package:fukuro_mobile/View/Component/Node/node_resource_screen.dart';

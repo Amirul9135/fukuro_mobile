@@ -7,8 +7,7 @@ import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/Component/Node/config/cpu_config.dart';
 import 'package:fukuro_mobile/View/Component/Node/config/disk_config.dart';
 import 'package:fukuro_mobile/View/Component/Node/config/mem_config.dart';
-import 'package:fukuro_mobile/View/Component/Node/config/net_config.dart';
-import 'package:fukuro_mobile/View/Component/Node/config/node_config_form.dart';
+import 'package:fukuro_mobile/View/Component/Node/config/net_config.dart'; 
 
 class NodeConfigScreen extends StatefulWidget {
   const NodeConfigScreen({Key? key, required this.node}) : super(key: key);

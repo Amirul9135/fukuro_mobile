@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/fukuro_request.dart';
-import 'package:fukuro_mobile/Controller/node_config.dart';
-import 'package:fukuro_mobile/Controller/utilities.dart'; 
+import 'package:fukuro_mobile/Controller/node_config.dart'; 
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Misc/expandable_fab.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';

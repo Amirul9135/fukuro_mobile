@@ -1,5 +1,4 @@
-import 'dart:convert';
-
+ 
 import 'package:fukuro_mobile/Controller/fukuro_request.dart';
 import 'package:http/http.dart' as http;
 
