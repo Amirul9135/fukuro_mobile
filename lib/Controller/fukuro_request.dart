@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'SecureStorage.dart';
 
 class FukuroRequest {
-  final Map<String, dynamic> _body = {};
+  final Map<dynamic, dynamic> _body = {};
   final Map<String, String> _headers = {};
 
   //static String _fukuroUrl = "http://10.0.2.2:5000/api/";
@@ -31,7 +31,7 @@ class FukuroRequest {
     _body.addAll(data);
   }
 
-  addBody(Map<String, dynamic> data) {
+  addBody(Map<dynamic, dynamic> data) {
     _body.addAll(data);
   }
 
@@ -122,22 +122,31 @@ class FukuroRequest {
 
 class FukuroResponse{
   http.Response res;
-  dynamic _body;
-  FukuroResponse({required this.res}){
-    print('body $res');
+  dynamic _body = {};
+  FukuroResponse({required this.res}){ 
     try{
     _body = jsonDecode(res.body); 
+    print('res $_body');
 
     }catch(E){
+      print('error in response $E' );
 
-    }
-    print('body $_body');
+    } 
   }
   status(){
     return res.statusCode;
   }
   body(){
     return _body;
+  }
+  msg(){
+    if(_body['message'] != null){
+      return _body['message'].toString();
+    }
+    return '';
+  }
+  bool ok(){
+    return res.statusCode == 200;
   }
 
 

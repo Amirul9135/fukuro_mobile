@@ -26,4 +26,17 @@ class NodeConfig{
     http.Response htres = await req.del(); 
     return FukuroResponse(res: htres);
   }
+  
+  static Future<FukuroResponse>  loadMetricConfigurations(id,metric) async {
+    FukuroRequest req = FukuroRequest("config/$id/$metric");
+    http.Response htres = await req.get(); 
+    return FukuroResponse(res: htres);
+  }
+
+  static Future<FukuroResponse>  updateMetricConfigValues(id,metric,payload) async {
+    FukuroRequest req = FukuroRequest("config/$id/monitoring/$metric");
+    req.addBody(payload);
+    http.Response htres = await req.post(); 
+    return FukuroResponse(res: htres);
+  }
 }

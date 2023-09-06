@@ -16,5 +16,8 @@ class FukuroEditorController extends TextEditingController {
   getValueStr(){
     return text;
   }
+  getValueDouble(){
+    return double.tryParse(text)?? 0;
+  }
  
 }

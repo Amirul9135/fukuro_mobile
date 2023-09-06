@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Model/node.dart';
+import 'package:fukuro_mobile/View/Component/Node/config/cpu_config.dart';
+import 'package:fukuro_mobile/View/Component/Node/config/disk_config.dart';
+import 'package:fukuro_mobile/View/Component/Node/config/mem_config.dart';
+import 'package:fukuro_mobile/View/Component/Node/config/net_config.dart';
 import 'package:fukuro_mobile/View/Component/Node/config/node_config_form.dart';
 
 class NodeConfigScreen extends StatefulWidget {
@@ -41,11 +45,16 @@ class NodeConfigScreenState extends State<NodeConfigScreen>
                   vsync: this,
                 ),
                 pinned: true,
+                floating: false,
               ),
               SliverFillRemaining(
                 child: TabBarView(
                   controller: _tabController,
-                  children: [Text('1'),NodeConfigForm(node: widget.node,metricLabel: 'cpu',thresholdUnit: 'MHz',config: Map(),),Text('3'),Text('4'),Text('5')],
+                  children: [Text('1'),
+                  CPUConfiguration(node: widget.node),
+                  MEMConfiguration(node: widget.node),
+                  DISKConfiguration(node: widget.node),
+                  NETConfiguration(node: widget.node)],
                 ),
               ),
             ],

@@ -48,7 +48,7 @@ class FukuroForm extends StatefulWidget {
   static String tf24H = "HH:mm";
   static String tf12H = "hh:mm aa";
 
-  final Map<String, Map<String, dynamic>> fields;
+  final Map<String, Map<dynamic, dynamic>> fields;
 
   const FukuroForm({Key? key, required this.fields}) : super(key: key);
 
