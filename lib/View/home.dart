@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fukuro_mobile/Model/node.dart';
+import 'package:fukuro_mobile/View/Component/Node/report/cpu_report.dart';
+import 'package:fukuro_mobile/View/Component/Node/report/metric_chart.dart';
 import 'package:fukuro_mobile/View/Component/node_form.dart';
 import 'package:fukuro_mobile/View/node_list.dart';
 import 'package:fukuro_mobile/View/Component/Misc/expandable_fab.dart';
@@ -69,7 +72,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  NodeForm(),
+                  CPUReport(node: Node()),
                   NodeList(),
                   Text("notification"),
                 ],

@@ -1,4 +1,6 @@
-class CpuUsage { 
+import 'package:fukuro_mobile/Model/chart_data.dart';
+
+class CpuUsage implements ChartData { 
   //node id altered due to unnecessary  in front end
   DateTime _dateTime = DateTime.now(); 
   double _user = 0;
@@ -49,5 +51,26 @@ class CpuUsage {
   double get system => _system;
   set system(double value) {
     _system = value;
+  }
+  
+  @override
+  DateTime getTimeStamp() {
+    return _dateTime;
+  }
+  
+  @override
+  double getVal(ChartDataType type) {
+    switch(type){
+      case ChartDataType.CPUTotal:
+        return total;
+      case ChartDataType.CPUUser:
+        return user;
+      case ChartDataType.CPUSytem:
+        return system;
+      case ChartDataType.CPUInterrupt:
+        return interrupt;
+      default:
+        return 0;
+    }
   }
 }

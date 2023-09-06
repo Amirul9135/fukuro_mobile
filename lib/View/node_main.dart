@@ -4,6 +4,7 @@ import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Node/config/node_config_screen.dart';
 import 'package:fukuro_mobile/View/Component/Node/node_details.dart';
 import 'package:fukuro_mobile/View/Component/Node/node_resource_screen.dart';
+import 'package:fukuro_mobile/View/Component/Node/report/metric_chart.dart';
 
 class NodeMainScreen extends StatefulWidget {
   const NodeMainScreen({Key? key, required this.thisNode}) : super(key: key);
@@ -75,8 +76,8 @@ class NodeMainScreenState extends State<NodeMainScreen> {
               ListTile(
                 leading: const Icon(Icons.auto_graph_outlined),
                 title: const Text('Reports'),
-                onTap: () => _selectMenuItem('Monitoring_Config'),
-                selected: _selectedMenuItem == 'Monitoring_Config',
+                onTap: () => _selectMenuItem('Reports'),
+                selected: _selectedMenuItem == 'Reports',
               ), 
               const Divider(), 
               ListTile(
@@ -121,6 +122,7 @@ class NodeMainScreenState extends State<NodeMainScreen> {
             : _selectedMenuItem == 'Settings' ? Text('setting')
             : _selectedMenuItem == 'Res_CPU' ? NodeResourceScreen(thisNode: widget.thisNode)
             : _selectedMenuItem == 'Node_Config' ? NodeConfigScreen(node: widget.thisNode,)
+            : _selectedMenuItem == 'Reports'? MetricChart(title: 'test',)
                 : Text("placeholder"));
   }
 }

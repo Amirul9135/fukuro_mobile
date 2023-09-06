@@ -108,7 +108,9 @@ class FukuroFormState extends State<FukuroForm> {
 
           DateTime? dtInit = fieldConfig['dtInit'];
           DateTime? dtMin = fieldConfig['dtMin'];
-          return    TextFormField( 
+          return    Container(
+            padding: const EdgeInsets.fromLTRB(1, 10, 1, 10),
+            child: TextFormField( 
             focusNode: fieldConfig['focus'] ,
             readOnly:( fieldConfig['readOnly']  ?? false),
             controller: fieldConfig['controller'],
@@ -130,7 +132,7 @@ class FukuroFormState extends State<FukuroForm> {
               })(), 
               labelStyle: const TextStyle(fontSize: 18),
               hintText: fieldConfig['hint']??'',
-              helperText:  fieldConfig['help']?? '',
+              helperText:  fieldConfig['help'],
               prefixIcon: fieldConfig['icon'],
               suffix: (fieldConfig['isTimeUnit'] ?? false)
                   ? _timeUnitButton(fieldConfig)
@@ -198,7 +200,7 @@ class FukuroFormState extends State<FukuroForm> {
 
               return error + '  ';
             },
-          );
+          ),);
         }).toList(),
       ),
     );
