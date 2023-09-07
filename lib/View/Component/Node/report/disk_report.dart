@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/metric_controller.dart';
 import 'package:fukuro_mobile/Model/chart_data.dart';
 import 'package:fukuro_mobile/Model/cpu_usage.dart';
+import 'package:fukuro_mobile/Model/disk_usage.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/Component/Node/report/metric_chart.dart';
@@ -10,30 +11,29 @@ import 'package:fukuro_mobile/View/Component/fukuro_form.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 
-class CPUReport extends StatefulWidget {
+class DISKReport extends StatefulWidget {
   final Node node;
   final Function? fnDelete;
-  const CPUReport({Key? key, required this.node, this.fnDelete})
+  const DISKReport({Key? key, required this.node, this.fnDelete})
       : super(key: key);
 
   @override
-  CPUReportState createState() => CPUReportState();
+  DISKReportState createState() => DISKReportState();
 }
 
-class CPUReportState extends State<CPUReport> {
+class DISKReportState extends State<DISKReport> {
   final GlobalKey<MetricChartState> chartKey = GlobalKey();
-  final List<CpuUsage> data = [];
+  final List<DISKUsage> data = [];
 
   final Map<String, Map<dynamic, dynamic>> interval = {};
   final Map<String, Map<dynamic, dynamic>> dtStart = {};
   final Map<String, Map<dynamic, dynamic>> dtEnd = {};
 
   double threshold = 0;
-  late MetricChartSeries totalSeries;
-  late MetricChartSeries userSeries;
-  late MetricChartSeries interruptSeries;
-  late MetricChartSeries systemSeries;
-  ChartDataType selectedType = ChartDataType.CPUTotal;
+  late MetricChartSeries utilizationSeries; 
+  late MetricChartSeries readSeries; 
+  late MetricChartSeries writeSeries; 
+  ChartDataType selectedType = ChartDataType.DISKUtilization;
 
   @override
   void initState() {
@@ -53,36 +53,29 @@ class CPUReportState extends State<CPUReport> {
             isTimeUnit: true)
         .build();
 
-    totalSeries = MetricChartSeries(
-        name: 'Total ',
+    utilizationSeries = MetricChartSeries(
+        name: 'Utilization (%)',
         type: MetricChartType.area,
         datas: data,
-        dataType: ChartDataType.CPUTotal,
-        color: Colors.blue);
-    userSeries = MetricChartSeries(
-        name: 'User ',
+        dataType: ChartDataType.DISKUtilization,
+        color: Colors.blue); 
+    readSeries = MetricChartSeries(
+        name: 'Reads (KB/s) ',
         type: MetricChartType.line,
         datas: data,
-        dataType: ChartDataType.CPUUser,
+        dataType: ChartDataType.DISKReadSpeed,
         color: Colors.green);
-    interruptSeries = MetricChartSeries(
-        name: 'Interrupt ',
+    writeSeries = MetricChartSeries(
+        name: 'Writes (KB/s) ',
         type: MetricChartType.line,
         datas: data,
-        dataType: ChartDataType.CPUInterrupt,
+        dataType: ChartDataType.DISKWriteSpeed,
         color: Colors.yellow);
-    systemSeries = MetricChartSeries(
-        name: 'System ',
-        type: MetricChartType.line,
-        datas: data,
-        dataType: ChartDataType.CPUSytem,
-        color: Colors.brown);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      chartKey.currentState?.addSeries(totalSeries);
-      chartKey.currentState?.addSeries(userSeries);
-      chartKey.currentState?.addSeries(systemSeries);
-      chartKey.currentState?.addSeries(interruptSeries);
+      chartKey.currentState?.addSeries(utilizationSeries); 
+      chartKey.currentState?.addSeries(readSeries); 
+      chartKey.currentState?.addSeries(writeSeries); 
       if (mounted) setState(() {});
     });
   }
@@ -152,8 +145,7 @@ class CPUReportState extends State<CPUReport> {
             Container(
               child: MetricChart(
                 key: chartKey,
-                title: "CPU Usage(%) Over time",
-                maxY: 100,
+                title: "Disk Usage Over time", 
               ),
             ),
             ExpansionTileBorderItem(
@@ -178,10 +170,9 @@ class CPUReportState extends State<CPUReport> {
                   DropdownButton(
                       value: selectedType,
                       items: [
-                        ChartDataType.CPUTotal,
-                        ChartDataType.CPUUser,
-                        ChartDataType.CPUSytem,
-                        ChartDataType.CPUInterrupt,
+                        ChartDataType.DISKUtilization,
+                        ChartDataType.DISKReadSpeed,
+                        ChartDataType.DISKWriteSpeed, 
                       ].map((ChartDataType items) {
                         return DropdownMenuItem(
                           value: items,
@@ -207,29 +198,24 @@ class CPUReportState extends State<CPUReport> {
                   child: PaginatedDataTable(
                       columns: const [
                         DataColumn(label: Text('Date Time')),
-                        DataColumn(label: Text('Total(%)')),
-                        DataColumn(label: Text('User(%)')),
-                        DataColumn(label: Text('System(%)')),
-                        DataColumn(label: Text('Interrupt(%)')),
+                        DataColumn(label: Text('Utilization(%)')),
+                        DataColumn(label: Text('WriteSpeed(KB/s)')),
+                        DataColumn(label: Text('ReadSpeed(KB/s)')), 
                       ],
                       source: _DataSource(
                           data: data.where((e) {
-                        if (selectedType == ChartDataType.CPUTotal &&
-                            e.total >= threshold) {
+                        if (selectedType == ChartDataType.DISKUtilization &&
+                            e.utilization >= threshold) {
                           return true;
                         }
-                        if (selectedType == ChartDataType.CPUUser &&
-                            e.user >= threshold) {
+                        if (selectedType == ChartDataType.DISKReadSpeed &&
+                            e.readSpeed >= threshold) {
                           return true;
                         }
-                        if (selectedType == ChartDataType.CPUSytem &&
-                            e.system >= threshold) {
+                        if (selectedType == ChartDataType.DISKWriteSpeed &&
+                            e.writeSpeed >= threshold) {
                           return true;
-                        }
-                        if (selectedType == ChartDataType.CPUInterrupt &&
-                            e.interrupt >= threshold) {
-                          return true;
-                        }
+                        } 
                         return false;
                       }).toList())
                       ),
@@ -272,8 +258,8 @@ class CPUReportState extends State<CPUReport> {
     }
     data.clear();
     if (mounted) setState(() {});
-    data.addAll(await MetricController.getHistoricalCPUReading(
-        1, dateStart, intvl, dateEnd));
+    data.addAll(await MetricController.getHistoricalDiskReading(
+        1,"sda", dateStart, intvl, dateEnd));
     if (mounted) {
       setState(() {});
     }
@@ -299,7 +285,7 @@ class CPUReportState extends State<CPUReport> {
 }
 
 class _DataSource extends DataTableSource {
-  final List<CpuUsage> data;
+  final List<DISKUsage> data;
   double? threshold;
 
   _DataSource({required this.data});
@@ -309,10 +295,9 @@ class _DataSource extends DataTableSource {
     final item = data[index];
     return DataRow(cells: [
       DataCell(Text(dt.format(item.dateTime.toLocal()))),
-      DataCell(Text(item.total.toStringAsFixed(2))),
-      DataCell(Text(item.user.toStringAsFixed(2))),
-      DataCell(Text(item.system.toStringAsFixed(2))),
-      DataCell(Text(item.interrupt.toStringAsFixed(2))),
+      DataCell(Text(item.utilization.toStringAsFixed(2))),
+      DataCell(Text(item.writeSpeed.toStringAsFixed(2))),
+      DataCell(Text(item.readSpeed.toStringAsFixed(2))), 
     ]);
   }
 

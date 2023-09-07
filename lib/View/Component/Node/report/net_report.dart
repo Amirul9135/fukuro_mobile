@@ -1,8 +1,8 @@
 import 'package:expansion_tile_group/expansion_tile_group.dart';
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/metric_controller.dart';
-import 'package:fukuro_mobile/Model/chart_data.dart';
-import 'package:fukuro_mobile/Model/cpu_usage.dart';
+import 'package:fukuro_mobile/Model/chart_data.dart'; 
+import 'package:fukuro_mobile/Model/net_usage.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/Component/Node/report/metric_chart.dart';
@@ -10,30 +10,32 @@ import 'package:fukuro_mobile/View/Component/fukuro_form.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 
-class CPUReport extends StatefulWidget {
+class NETReport extends StatefulWidget {
   final Node node;
   final Function? fnDelete;
-  const CPUReport({Key? key, required this.node, this.fnDelete})
+  const NETReport({Key? key, required this.node, this.fnDelete})
       : super(key: key);
 
   @override
-  CPUReportState createState() => CPUReportState();
+  NETReportState createState() => NETReportState();
 }
 
-class CPUReportState extends State<CPUReport> {
+class NETReportState extends State<NETReport> {
   final GlobalKey<MetricChartState> chartKey = GlobalKey();
-  final List<CpuUsage> data = [];
+  final List<NETUsage> data = [];
 
   final Map<String, Map<dynamic, dynamic>> interval = {};
   final Map<String, Map<dynamic, dynamic>> dtStart = {};
   final Map<String, Map<dynamic, dynamic>> dtEnd = {};
 
   double threshold = 0;
-  late MetricChartSeries totalSeries;
-  late MetricChartSeries userSeries;
-  late MetricChartSeries interruptSeries;
-  late MetricChartSeries systemSeries;
-  ChartDataType selectedType = ChartDataType.CPUTotal;
+  late MetricChartSeries rByteSeries;
+  late MetricChartSeries rDropSeries;
+  late MetricChartSeries rErrorSeries;
+  late MetricChartSeries tByteSeries;
+  late MetricChartSeries tDropSeries;
+  late MetricChartSeries tErrorSeries;
+  ChartDataType selectedType = ChartDataType.NETReceivedByte;
 
   @override
   void initState() {
@@ -53,36 +55,53 @@ class CPUReportState extends State<CPUReport> {
             isTimeUnit: true)
         .build();
 
-    totalSeries = MetricChartSeries(
-        name: 'Total ',
+    rByteSeries = MetricChartSeries(
+        name: 'Received KB ',
         type: MetricChartType.area,
         datas: data,
-        dataType: ChartDataType.CPUTotal,
+        dataType: ChartDataType.NETReceivedByte,
         color: Colors.blue);
-    userSeries = MetricChartSeries(
-        name: 'User ',
+    rDropSeries = MetricChartSeries(
+        name: 'Recevied Drop ',
         type: MetricChartType.line,
         datas: data,
-        dataType: ChartDataType.CPUUser,
-        color: Colors.green);
-    interruptSeries = MetricChartSeries(
-        name: 'Interrupt ',
+        dataType: ChartDataType.NETReceivedDrop,
+        color: Colors.black);
+    rErrorSeries = MetricChartSeries(
+        name: 'Received Error ',
         type: MetricChartType.line,
         datas: data,
-        dataType: ChartDataType.CPUInterrupt,
-        color: Colors.yellow);
-    systemSeries = MetricChartSeries(
-        name: 'System ',
+        dataType: ChartDataType.NETReceivedError,
+        color: Colors.deepPurple);
+        
+    tByteSeries = MetricChartSeries(
+        name: 'Transmitted KB ',
+        type: MetricChartType.area,
+        datas: data,
+        dataType: ChartDataType.NETTransmitByte,
+        color: Colors.yellow); 
+    tDropSeries = MetricChartSeries(
+        name: 'Transmitted Drop ',
         type: MetricChartType.line,
         datas: data,
-        dataType: ChartDataType.CPUSytem,
-        color: Colors.brown);
+        dataType: ChartDataType.NETTransmitDrop,
+        color: Colors.deepOrange);
+    tErrorSeries = MetricChartSeries(
+        name: 'Transmitted Error ',
+        type: MetricChartType.line,
+        datas: data,
+        dataType: ChartDataType.NETTransmitError,
+        color: Colors.deepPurple);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      chartKey.currentState?.addSeries(totalSeries);
-      chartKey.currentState?.addSeries(userSeries);
-      chartKey.currentState?.addSeries(systemSeries);
-      chartKey.currentState?.addSeries(interruptSeries);
+      chartKey.currentState?.addSeries(rByteSeries);
+      chartKey.currentState?.addSeries(tByteSeries);
+
+      chartKey.currentState?.addSeries(rDropSeries);
+      chartKey.currentState?.addSeries(tDropSeries);
+
+      chartKey.currentState?.addSeries(rErrorSeries);
+      chartKey.currentState?.addSeries(tErrorSeries);
       if (mounted) setState(() {});
     });
   }
@@ -152,8 +171,7 @@ class CPUReportState extends State<CPUReport> {
             Container(
               child: MetricChart(
                 key: chartKey,
-                title: "CPU Usage(%) Over time",
-                maxY: 100,
+                title: "Network Usage Over time", 
               ),
             ),
             ExpansionTileBorderItem(
@@ -178,10 +196,12 @@ class CPUReportState extends State<CPUReport> {
                   DropdownButton(
                       value: selectedType,
                       items: [
-                        ChartDataType.CPUTotal,
-                        ChartDataType.CPUUser,
-                        ChartDataType.CPUSytem,
-                        ChartDataType.CPUInterrupt,
+                        ChartDataType.NETReceivedByte,
+                        ChartDataType.NETReceivedDrop,
+                        ChartDataType.NETReceivedError,
+                        ChartDataType.NETTransmitByte,
+                        ChartDataType.NETTransmitDrop,
+                        ChartDataType.NETTransmitError,
                       ].map((ChartDataType items) {
                         return DropdownMenuItem(
                           value: items,
@@ -189,7 +209,7 @@ class CPUReportState extends State<CPUReport> {
                         );
                       }).toList(),
                       onChanged: (t) {
-                        selectedType = t ?? ChartDataType.CPUTotal;
+                        selectedType = t ?? ChartDataType.NETReceivedByte;
                         if (mounted) {
                           setState(() {});
                         }
@@ -207,27 +227,37 @@ class CPUReportState extends State<CPUReport> {
                   child: PaginatedDataTable(
                       columns: const [
                         DataColumn(label: Text('Date Time')),
-                        DataColumn(label: Text('Total(%)')),
-                        DataColumn(label: Text('User(%)')),
-                        DataColumn(label: Text('System(%)')),
-                        DataColumn(label: Text('Interrupt(%)')),
+                        DataColumn(label: Text('Received (KB)')),
+                        DataColumn(label: Text('Transmitted (KB)')),
+                        DataColumn(label: Text('R Drop')),
+                        DataColumn(label: Text('T Drop')),
+                        DataColumn(label: Text('R Error')),
+                        DataColumn(label: Text('T Error')),
                       ],
                       source: _DataSource(
                           data: data.where((e) {
-                        if (selectedType == ChartDataType.CPUTotal &&
-                            e.total >= threshold) {
+                        if (selectedType == ChartDataType.NETReceivedByte &&
+                            e.rkByte >= threshold) {
                           return true;
                         }
-                        if (selectedType == ChartDataType.CPUUser &&
-                            e.user >= threshold) {
+                        if (selectedType == ChartDataType.NETReceivedDrop &&
+                            e.rDrop >= threshold) {
                           return true;
                         }
-                        if (selectedType == ChartDataType.CPUSytem &&
-                            e.system >= threshold) {
+                        if (selectedType == ChartDataType.NETReceivedError &&
+                            e.rError >= threshold) {
                           return true;
                         }
-                        if (selectedType == ChartDataType.CPUInterrupt &&
-                            e.interrupt >= threshold) {
+                        if (selectedType == ChartDataType.NETTransmitByte &&
+                            e.tkByte >= threshold) {
+                          return true;
+                        }
+                        if (selectedType == ChartDataType.NETTransmitDrop &&
+                            e.tDrop >= threshold) {
+                          return true;
+                        }
+                        if (selectedType == ChartDataType.NETTransmitError &&
+                            e.tError >= threshold) {
                           return true;
                         }
                         return false;
@@ -272,7 +302,7 @@ class CPUReportState extends State<CPUReport> {
     }
     data.clear();
     if (mounted) setState(() {});
-    data.addAll(await MetricController.getHistoricalCPUReading(
+    data.addAll(await MetricController.getHistoricalNETReading(
         1, dateStart, intvl, dateEnd));
     if (mounted) {
       setState(() {});
@@ -299,7 +329,7 @@ class CPUReportState extends State<CPUReport> {
 }
 
 class _DataSource extends DataTableSource {
-  final List<CpuUsage> data;
+  final List<NETUsage> data;
   double? threshold;
 
   _DataSource({required this.data});
@@ -309,10 +339,12 @@ class _DataSource extends DataTableSource {
     final item = data[index];
     return DataRow(cells: [
       DataCell(Text(dt.format(item.dateTime.toLocal()))),
-      DataCell(Text(item.total.toStringAsFixed(2))),
-      DataCell(Text(item.user.toStringAsFixed(2))),
-      DataCell(Text(item.system.toStringAsFixed(2))),
-      DataCell(Text(item.interrupt.toStringAsFixed(2))),
+      DataCell(Text(item.rkByte.toStringAsFixed(2))),
+      DataCell(Text(item.tkByte.toStringAsFixed(2))),
+      DataCell(Text(item.rDrop.toString())),
+      DataCell(Text(item.tDrop.toString())),
+      DataCell(Text(item.rError.toString())),
+      DataCell(Text(item.tError.toString())),
     ]);
   }
 

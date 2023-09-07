@@ -5,6 +5,8 @@ Widget horizontalGap(double intpx) => SizedBox(width: intpx); // horizontal gap
 
 enum TimeUnit { second, minute, hour, day }
 
+enum Metrics { cpu, memory, disk, network }
+
 int convertVal(int val, TimeUnit from, TimeUnit to) {
   switch (from) {
     case TimeUnit.second:
@@ -71,20 +73,19 @@ String timeUnitNAme(TimeUnit unit) {
   }
 }
 
-String censorString(String inp){ 
+String censorString(String inp) {
   return '*' * inp.length;
 }
 
-
-double myPareseNum(dynamic val){
-  if(val is double){
+double myPareseNum(dynamic val) {
+  if (val is double) {
     return val;
   }
-  if(val is String){
-    return (double.tryParse(val)??0);
+  if (val is String) {
+    return (double.tryParse(val) ?? 0);
   }
-  if(val is int){
-    return  val.toDouble();
+  if (val is int) {
+    return val.toDouble();
   }
   return 0;
 }

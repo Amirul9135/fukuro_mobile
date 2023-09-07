@@ -10,7 +10,7 @@ class FukuroDialog extends StatelessWidget {
   static int QUESTION = 4;
   final TextEditingController _txtCont = TextEditingController();
 
-  String getInputText(){
+  String getInputText() {
     return _txtCont.text;
   }
 
@@ -28,129 +28,152 @@ class FukuroDialog extends StatelessWidget {
       {super.key,
       required this.title,
       required this.mode,
-       this.message="",
+      this.message = "",
       this.okAction,
       this.NoBtn = false,
       this.textInput = false,
       this.inputHint = "",
       this.CancelBtnText = "Cancel",
-      this.BtnText="Ok"});
+      this.BtnText = "Ok"});
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.grey.withOpacity(0.2),
-      child:  CupertinoAlertDialog(
-      title: Column(
-        children: [
-          if (mode == FukuroDialog.SUCCESS)
-            const Icon(
-              Icons.check_circle_outline,
-              color: Colors.green,
-              size: 70,
-            ),
-          if (mode == FukuroDialog.WARNING)
-            const Icon(
-              Icons.error_outline_rounded,
-              color: Colors.orange,
-              size: 70,
-            ),
-          if (mode == FukuroDialog.ERROR)
-            const Icon(
-              Icons.cancel_outlined,
-              color: Colors.red,
-              size: 70,
-            ),
-          if (mode == FukuroDialog.INFO)
-            const Icon(
-              Icons.info_outline,
-              color: Colors.grey,
-              size: 70,
-            ),
-          if (mode == FukuroDialog.QUESTION)
-            const Icon(
-              CupertinoIcons.question_circle,
-              color: Colors.grey,
-              size: 70,
-            ),
-          Text(title)
-        ],
-      ),
-      content: 
-      Column(
-        children: [
-          Text(message),
-          if (textInput)
-            TextFormField(
-              controller: _txtCont,
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                hintText: inputHint,
-                
+      child: CupertinoAlertDialog(
+        title: Column(
+          children: [
+            if (mode == FukuroDialog.SUCCESS)
+              const Icon(
+                Icons.check_circle_outline,
+                color: Colors.green,
+                size: 70,
               ),
-            )
-        ],
-      ),
-      actions: <Widget>[
-        CupertinoDialogAction(
-          child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
+            if (mode == FukuroDialog.WARNING)
+              const Icon(
+                Icons.error_outline_rounded,
+                color: Colors.orange,
+                size: 70,
               ),
-              child:  Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  BtnText,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+            if (mode == FukuroDialog.ERROR)
+              const Icon(
+                Icons.cancel_outlined,
+                color: Colors.red,
+                size: 70,
               ),
-              onPressed: () {
-                Navigator.pop(context);
-                okpressed = true;
-                extraOkAction();
-              }),
+            if (mode == FukuroDialog.INFO)
+              const Icon(
+                Icons.info_outline,
+                color: Colors.grey,
+                size: 70,
+              ),
+            if (mode == FukuroDialog.QUESTION)
+              const Icon(
+                CupertinoIcons.question_circle,
+                color: Colors.grey,
+                size: 70,
+              ),
+            Text(title)
+          ],
         ),
-        if (NoBtn)
+        content: Column(
+          children: [
+            Text(message),
+            if (textInput)
+              TextFormField(
+                controller: _txtCont,
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  hintText: inputHint,
+                ),
+              )
+          ],
+        ),
+        actions: <Widget>[
           CupertinoDialogAction(
             child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
-                child:  Padding(
+                child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Text(
-                    CancelBtnText,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    BtnText,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
                 onPressed: () {
                   Navigator.pop(context);
+                  okpressed = true;
+                  extraOkAction();
                 }),
           ),
-      ],
-    ),);
-    }
+          if (NoBtn)
+            CupertinoDialogAction(
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      CancelBtnText,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+            ),
+        ],
+      ),
+    );
+  }
 
-  static error(context,title,message){
-      showDialog(
-          context: context,
-          builder: (_) => FukuroDialog(
-                title: title,
-                message: message,
-                mode: FukuroDialog.ERROR, 
-              ));
+  static warning(context, title, message) {
+    showDialog(
+        context: context,
+        builder: (_) => FukuroDialog(
+              title: title,
+              message: message,
+              mode: FukuroDialog.WARNING,
+            ));
   }
-    static success(context,title,message){
-      showDialog(
-          context: context,
-          builder: (_) => FukuroDialog(
-                title: title,
-                message: message,
-                mode: FukuroDialog.SUCCESS, 
-              ));
+
+  static error(context, title, message) {
+    showDialog(
+        context: context,
+        builder: (_) => FukuroDialog(
+              title: title,
+              message: message,
+              mode: FukuroDialog.ERROR,
+            ));
   }
+
+  static info(context, title, message) {
+    showDialog(
+        context: context,
+        builder: (_) => FukuroDialog(
+              title: title,
+              message: message,
+              mode: FukuroDialog.INFO,
+            ));
+  }
+  
+  static success(context, title, message) {
+    showDialog(
+        context: context,
+        builder: (_) => FukuroDialog(
+              title: title,
+              message: message,
+              mode: FukuroDialog.SUCCESS,
+            ));
+  }
+
   extraOkAction() {
     if (okAction != null) {
       okAction!();

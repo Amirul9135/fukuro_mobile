@@ -1,12 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fukuro_mobile/Model/cpu_usage.dart';
+import 'package:fukuro_mobile/Model/dsik_drive.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'dart:convert';
 import 'fukuro_request.dart';
 import 'package:http/http.dart' as http;
 
 class NodeController {
+ 
+  static Future<List<DiskDrive>> getDiskList(int nodeId)async{
+    FukuroRequest req = FukuroRequest('config/$nodeId/disk/list');
+    http.Response httpr = await req.get();
+    FukuroResponse res = FukuroResponse(res: httpr);
+    List<DiskDrive> drives = [];
+    if(res.ok()){
+      for (var item in res.body()){
+        drives.add(DiskDrive.fromJson(item));
+      }
+    }
+    return drives;
+
+  }
+
   static Future<List<Node>> fetchAllUserOwnedNodes() async {
     FukuroRequest req = FukuroRequest("node");
     http.Response res = await req.get();

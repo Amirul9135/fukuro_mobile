@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/metric_controller.dart';
 import 'package:fukuro_mobile/Model/chart_data.dart';
 import 'package:fukuro_mobile/Model/cpu_usage.dart';
+import 'package:fukuro_mobile/Model/mem_usage.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/Component/Node/report/metric_chart.dart';
@@ -10,30 +11,29 @@ import 'package:fukuro_mobile/View/Component/fukuro_form.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 
-class CPUReport extends StatefulWidget {
+class MEMReport extends StatefulWidget {
   final Node node;
   final Function? fnDelete;
-  const CPUReport({Key? key, required this.node, this.fnDelete})
+  const MEMReport({Key? key, required this.node, this.fnDelete})
       : super(key: key);
 
   @override
-  CPUReportState createState() => CPUReportState();
+  MEMReportState createState() => MEMReportState();
 }
 
-class CPUReportState extends State<CPUReport> {
+class MEMReportState extends State<MEMReport> {
   final GlobalKey<MetricChartState> chartKey = GlobalKey();
-  final List<CpuUsage> data = [];
+  final List<MEMUsage> data = [];
 
   final Map<String, Map<dynamic, dynamic>> interval = {};
   final Map<String, Map<dynamic, dynamic>> dtStart = {};
   final Map<String, Map<dynamic, dynamic>> dtEnd = {};
 
   double threshold = 0;
-  late MetricChartSeries totalSeries;
-  late MetricChartSeries userSeries;
-  late MetricChartSeries interruptSeries;
-  late MetricChartSeries systemSeries;
-  ChartDataType selectedType = ChartDataType.CPUTotal;
+  late MetricChartSeries usedSeries;
+  late MetricChartSeries cachedSeries;
+  late MetricChartSeries bufferSeries;
+  ChartDataType selectedType = ChartDataType.MEMUsed;
 
   @override
   void initState() {
@@ -53,36 +53,29 @@ class CPUReportState extends State<CPUReport> {
             isTimeUnit: true)
         .build();
 
-    totalSeries = MetricChartSeries(
-        name: 'Total ',
+    usedSeries = MetricChartSeries(
+        name: 'Used ',
         type: MetricChartType.area,
         datas: data,
-        dataType: ChartDataType.CPUTotal,
+        dataType: ChartDataType.MEMUsed,
         color: Colors.blue);
-    userSeries = MetricChartSeries(
-        name: 'User ',
+    cachedSeries = MetricChartSeries(
+        name: 'Cached ',
         type: MetricChartType.line,
         datas: data,
-        dataType: ChartDataType.CPUUser,
-        color: Colors.green);
-    interruptSeries = MetricChartSeries(
-        name: 'Interrupt ',
+        dataType: ChartDataType.MEMCached,
+        color: Colors.yellow);
+    bufferSeries = MetricChartSeries(
+        name: 'Buffer ',
         type: MetricChartType.line,
         datas: data,
         dataType: ChartDataType.CPUInterrupt,
-        color: Colors.yellow);
-    systemSeries = MetricChartSeries(
-        name: 'System ',
-        type: MetricChartType.line,
-        datas: data,
-        dataType: ChartDataType.CPUSytem,
         color: Colors.brown);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      chartKey.currentState?.addSeries(totalSeries);
-      chartKey.currentState?.addSeries(userSeries);
-      chartKey.currentState?.addSeries(systemSeries);
-      chartKey.currentState?.addSeries(interruptSeries);
+      chartKey.currentState?.addSeries(usedSeries);
+      chartKey.currentState?.addSeries(cachedSeries);
+      chartKey.currentState?.addSeries(bufferSeries);
       if (mounted) setState(() {});
     });
   }
@@ -152,7 +145,7 @@ class CPUReportState extends State<CPUReport> {
             Container(
               child: MetricChart(
                 key: chartKey,
-                title: "CPU Usage(%) Over time",
+                title: "Memory Usage(%) Over time",
                 maxY: 100,
               ),
             ),
@@ -178,10 +171,9 @@ class CPUReportState extends State<CPUReport> {
                   DropdownButton(
                       value: selectedType,
                       items: [
-                        ChartDataType.CPUTotal,
-                        ChartDataType.CPUUser,
-                        ChartDataType.CPUSytem,
-                        ChartDataType.CPUInterrupt,
+                        ChartDataType.MEMUsed,
+                        ChartDataType.MEMBuffered,
+                        ChartDataType.MEMCached,
                       ].map((ChartDataType items) {
                         return DropdownMenuItem(
                           value: items,
@@ -189,7 +181,7 @@ class CPUReportState extends State<CPUReport> {
                         );
                       }).toList(),
                       onChanged: (t) {
-                        selectedType = t ?? ChartDataType.CPUTotal;
+                        selectedType = t ?? ChartDataType.MEMUsed;
                         if (mounted) {
                           setState(() {});
                         }
@@ -207,32 +199,26 @@ class CPUReportState extends State<CPUReport> {
                   child: PaginatedDataTable(
                       columns: const [
                         DataColumn(label: Text('Date Time')),
-                        DataColumn(label: Text('Total(%)')),
-                        DataColumn(label: Text('User(%)')),
-                        DataColumn(label: Text('System(%)')),
-                        DataColumn(label: Text('Interrupt(%)')),
+                        DataColumn(label: Text('Used(%)')),
+                        DataColumn(label: Text('Cached(%)')),
+                        DataColumn(label: Text('Buffer(%)')),
                       ],
                       source: _DataSource(
                           data: data.where((e) {
-                        if (selectedType == ChartDataType.CPUTotal &&
-                            e.total >= threshold) {
+                        if (selectedType == ChartDataType.MEMUsed &&
+                            e.used >= threshold) {
                           return true;
                         }
-                        if (selectedType == ChartDataType.CPUUser &&
-                            e.user >= threshold) {
+                        if (selectedType == ChartDataType.MEMBuffered &&
+                            e.buffer >= threshold) {
                           return true;
                         }
-                        if (selectedType == ChartDataType.CPUSytem &&
-                            e.system >= threshold) {
-                          return true;
-                        }
-                        if (selectedType == ChartDataType.CPUInterrupt &&
-                            e.interrupt >= threshold) {
+                        if (selectedType == ChartDataType.MEMCached &&
+                            e.cached >= threshold) {
                           return true;
                         }
                         return false;
-                      }).toList())
-                      ),
+                      }).toList())),
                 ),
               ],
             ),
@@ -272,7 +258,7 @@ class CPUReportState extends State<CPUReport> {
     }
     data.clear();
     if (mounted) setState(() {});
-    data.addAll(await MetricController.getHistoricalCPUReading(
+    data.addAll(await MetricController.getHistoricalMEMReading(
         1, dateStart, intvl, dateEnd));
     if (mounted) {
       setState(() {});
@@ -299,7 +285,7 @@ class CPUReportState extends State<CPUReport> {
 }
 
 class _DataSource extends DataTableSource {
-  final List<CpuUsage> data;
+  final List<MEMUsage> data;
   double? threshold;
 
   _DataSource({required this.data});
@@ -309,10 +295,9 @@ class _DataSource extends DataTableSource {
     final item = data[index];
     return DataRow(cells: [
       DataCell(Text(dt.format(item.dateTime.toLocal()))),
-      DataCell(Text(item.total.toStringAsFixed(2))),
-      DataCell(Text(item.user.toStringAsFixed(2))),
-      DataCell(Text(item.system.toStringAsFixed(2))),
-      DataCell(Text(item.interrupt.toStringAsFixed(2))),
+      DataCell(Text(item.used.toStringAsFixed(2))),
+      DataCell(Text(item.cached.toStringAsFixed(2))),
+      DataCell(Text(item.buffer.toStringAsFixed(2))),
     ]);
   }
 

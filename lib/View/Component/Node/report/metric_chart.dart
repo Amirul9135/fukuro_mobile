@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Model/chart_data.dart'; 
 import 'package:intl/intl.dart';
@@ -28,8 +30,9 @@ class MetricChart extends StatefulWidget {
 
 class MetricChartState extends State<MetricChart> {
   
-  DateTime minX = DateTime.now();
-  DateTime maxX = DateTime.now();
+  DateTime? minX;
+  DateTime? maxX;
+  bool empty = true;
 
   List<MetricChartSeries> series = []; 
 
@@ -44,10 +47,14 @@ class MetricChartState extends State<MetricChart> {
   Widget build(BuildContext context) { 
     final double maxHeight =
         MediaQuery.of(context).size.height - AppBar().preferredSize.height; 
-      threshold ??= widget.initThreshold; 
-    if (series.isEmpty) {
+      threshold ??= widget.initThreshold;  
+    if (_checkEmpty()) {
       return Center(
-        child: Stack(
+        
+        child: Container(
+          margin:const EdgeInsets.all(10),
+          child: Stack(
+          
           alignment: Alignment.center,
           children: [
             const CircularProgressIndicator(),
@@ -60,14 +67,19 @@ class MetricChartState extends State<MetricChart> {
               ),
             ),
           ],
-        ),
+        ),)
       );
     }
+    _checkXBounds();
     return Container(
         constraints: BoxConstraints(maxHeight: maxHeight, minHeight: 300),
         height: 40.h,
         padding: const EdgeInsets.only(right: 20),
         child: SfCartesianChart(
+            legend: Legend(
+                isVisible: true,
+                isResponsive: true,
+                position: LegendPosition.bottom),
             title: ChartTitle(text: widget.title),
             primaryXAxis: DateTimeAxis(
               dateFormat: DateFormat('HH:mm:ss\nyyyy-MM-dd'),
@@ -92,26 +104,34 @@ class MetricChartState extends State<MetricChart> {
                 activationMode: ActivationMode.singleTap),
             series: _buildSeries()));
   }
-
+  bool _checkEmpty(){ 
+      empty = true; 
+      for(MetricChartSeries s in series){ 
+        if (s.datas.isNotEmpty){
+          empty = false;
+        }
+      } 
+      return empty;
+  }
   setThreshold(double val){
     threshold = val;
     setState(() {
       
     });
   }
-  _buildSeries() {
-    print('building $series');
+  _buildSeries() { 
     List<ChartSeries<dynamic, dynamic>> chartSeriesList = [];
-    if (threshold != null) {
+    if (threshold != null && !empty) {  
       chartSeriesList.add(LineSeries<ChartData, DateTime>(
+        name: 'Threshold',
         color: widget.thresholdColor ?? Colors.red.withOpacity(0.5),
         dataSource: <ChartData>[
           ThresholdData(
-            dateTime: minX,
+            dateTime: minX?? DateTime.now(),
             yVal: (threshold ?? 0),
           ), // Line 1
           ThresholdData(
-            dateTime: maxX,
+            dateTime: maxX?? DateTime.now(),
             yVal: (threshold?? 0),
           ), // Line 3
         ],
@@ -122,11 +142,10 @@ class MetricChartState extends State<MetricChart> {
         yAxisName: 'Y', // Y-axis label
       ));
     }
-    series.forEach((metricSeries) {
-      print(metricSeries.name);
-      print(metricSeries.datas.length);
+    series.forEach((metricSeries) {  
       if (metricSeries.type == MetricChartType.area) {
         chartSeriesList.add(AreaSeries<ChartData, DateTime>(
+          name: metricSeries.name,
           color: metricSeries.color?.withOpacity(0.2) ?? Colors.transparent,
           borderColor: metricSeries.color ?? Colors.black,
           borderWidth: 1,
@@ -138,8 +157,8 @@ class MetricChartState extends State<MetricChart> {
         ));
       } else if (metricSeries.type == MetricChartType.line) {
         chartSeriesList.add(LineSeries<ChartData, DateTime>(
-          //system
-          name: "user",
+          name: metricSeries.name,
+          //system 
           animationDuration: 1,
           color: metricSeries.color?.withOpacity(0.7) ?? Colors.transparent,
           dataSource: metricSeries.datas, //
@@ -152,49 +171,31 @@ class MetricChartState extends State<MetricChart> {
     });
     return chartSeriesList;
   }
- 
-  addSeries(MetricChartSeries s) {
-    s.datas.forEach((element) {
-      if (element.getTimeStamp().isAfter(maxX)) {
-        maxX = element.getTimeStamp();
+  _checkXBounds(){  
+    bool first = true; 
+    for(MetricChartSeries s in series){
+      for(ChartData d in s.datas){
+        if(first){
+          maxX = d.getTimeStamp();
+          minX = d.getTimeStamp();
+          first = false;
+        } 
+        if(d.getTimeStamp().isAfter(maxX!) ){
+          maxX = d.getTimeStamp();
+        }
+        if(d.getTimeStamp().isBefore(minX!)){
+          minX = d.getTimeStamp();
+        } 
       }
-      if (element.getTimeStamp().isBefore(minX)) {
-        minX = element.getTimeStamp();
-      }
-    });
+    } 
+    
+  }
+  addSeries(MetricChartSeries s) { 
     series.add(s);
     if (mounted) {
       setState(() {});
     }
-  }
-
-  addData(MetricChartSeries series, ChartData data) {
-    if (data.getTimeStamp().isAfter(maxX)) {
-      maxX = data.getTimeStamp();
-    }
-    if (data.getTimeStamp().isBefore(minX)) {
-      minX = data.getTimeStamp();
-    }
-    series.datas.add(data);
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  addDatas(MetricChartSeries series, List<ChartData> data) {
-    series.datas.forEach((element) {
-      if (element.getTimeStamp().isAfter(maxX)) {
-        maxX = element.getTimeStamp();
-      }
-      if (element.getTimeStamp().isBefore(minX)) {
-        minX = element.getTimeStamp();
-      }
-    });
-    series.datas.addAll(data);
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  } 
 }
 
 enum MetricChartType { line, area }

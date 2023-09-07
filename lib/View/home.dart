@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Model/node.dart';
+import 'package:fukuro_mobile/View/Component/Misc/disk_list.dart';
 import 'package:fukuro_mobile/View/Component/Node/report/cpu_report.dart';
 import 'package:fukuro_mobile/View/Component/Node/report/metric_chart.dart';
+import 'package:fukuro_mobile/View/Component/Node/report/metric_report_screen.dart';
 import 'package:fukuro_mobile/View/Component/node_form.dart';
 import 'package:fukuro_mobile/View/node_list.dart';
 import 'package:fukuro_mobile/View/Component/Misc/expandable_fab.dart';
@@ -72,7 +74,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  CPUReport(node: Node()),
+                  DiskList(node: Node()),
                   NodeList(),
                   Text("notification"),
                 ],
@@ -80,7 +82,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
             ),
           ],
         ),
-        floatingActionButton: (_tabController.index == 1)
+       /* floatingActionButton: (_tabController.index == 1)
             ? FloatingActionButton(
                 child: Icon(Icons.add_outlined),
                 onPressed: () {
@@ -116,13 +118,14 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     icon: const Icon(Icons.person),
                   ),
                 ],
-              ),
+              ),*/
       ),
     );
   }
 
   _onTabChange() {
     print("change");
+    if(mounted)
     setState(() {});
   }
 }
