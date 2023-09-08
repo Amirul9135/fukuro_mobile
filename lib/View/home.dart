@@ -75,7 +75,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                 NodeRealtimeScreen(node: (){Node test = Node();test.setNodID(1); return test;}()),
+                 Text("staging debug"),
                   NodeList(),
                   Text("notification"),
                 ],

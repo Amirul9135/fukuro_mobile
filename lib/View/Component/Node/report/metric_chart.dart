@@ -92,7 +92,7 @@ class MetricChartState extends State<MetricChart> {
               maximum: widget.maxY,
               axisLine: const AxisLine(width: 1),
               majorGridLines: MajorGridLines(
-                  width: 1, color: Colors.black.withOpacity(0.4)),
+                  width: 1, color: Colors.black.withOpacity(0.2)),
             ),
             crosshairBehavior: CrosshairBehavior(
                 enable: series.isNotEmpty,
@@ -144,6 +144,7 @@ class MetricChartState extends State<MetricChart> {
     series.forEach((metricSeries) {  
       if (metricSeries.type == MetricChartType.area) {
         chartSeriesList.add(AreaSeries<ChartData, DateTime>(
+          animationDuration: 1,
           name: metricSeries.name,
           color: metricSeries.color?.withOpacity(0.2) ?? Colors.transparent,
           borderColor: metricSeries.color ?? Colors.black,

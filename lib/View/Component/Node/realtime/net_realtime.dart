@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fukuro_mobile/Controller/WebSocketClient.dart';
 import 'package:fukuro_mobile/Controller/utilities.dart';
-import 'package:fukuro_mobile/Model/chart_data.dart';
-import 'package:fukuro_mobile/Model/cpu_usage.dart';
+import 'package:fukuro_mobile/Model/chart_data.dart'; 
+import 'package:fukuro_mobile/Model/net_usage.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/Component/Node/report/metric_chart.dart';
@@ -14,32 +14,34 @@ import 'package:fukuro_mobile/View/Component/fukuro_form.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 
-class CPURealtime extends StatefulWidget {
+class NETRealtime extends StatefulWidget {
   final Node node;
   final Function(Widget)? fnDelete;
   final WebSocketClient websocket;
-  const CPURealtime({Key? key, required this.node, this.fnDelete,required this.websocket})
+  const NETRealtime({Key? key, required this.node, this.fnDelete,required this.websocket})
       : super(key: key);
 
   @override
-  CPURealtimeState createState() => CPURealtimeState();
+  NETRealtimeState createState() => NETRealtimeState();
 }
 
-class CPURealtimeState extends State<CPURealtime> {
+class NETRealtimeState extends State<NETRealtime> {
   final GlobalKey<MetricChartState> chartKey = GlobalKey();
 
-  final List<CpuUsage> data = [];
+  final List<NETUsage> data = [];
 
   final Map<String, Map<dynamic, dynamic>> periodLength = {};
   final Map<String, Map<dynamic, dynamic>> refreshRate = {};
   final Map<String, Map<dynamic, dynamic>> agentInterval = {};
 
   double threshold = 0;
-  late MetricChartSeries totalSeries;
-  late MetricChartSeries userSeries;
-  late MetricChartSeries interruptSeries;
-  late MetricChartSeries systemSeries;
-  ChartDataType selectedType = ChartDataType.CPUTotal;
+  late MetricChartSeries rByteSeries;
+  late MetricChartSeries rDropSeries;
+  late MetricChartSeries rErrorSeries;
+  late MetricChartSeries tByteSeries;
+  late MetricChartSeries tDropSeries;
+  late MetricChartSeries tErrorSeries;
+  ChartDataType selectedType = ChartDataType.NETReceivedByte;
 
   int lengthVal = 10;
   int refreshRateVal = 1;
@@ -67,31 +69,43 @@ class CPURealtimeState extends State<CPURealtime> {
         .build();
     refreshRate['refreshRate']?["refresh"] = true;
     
-
-    totalSeries = MetricChartSeries(
-        name: 'Total ',
+        rByteSeries = MetricChartSeries(
+        name: 'Received KB ',
         type: MetricChartType.area,
         datas: data,
-        dataType: ChartDataType.CPUTotal,
+        dataType: ChartDataType.NETReceivedByte,
         color: Colors.blue);
-    userSeries = MetricChartSeries(
-        name: 'User ',
+    rDropSeries = MetricChartSeries(
+        name: 'Recevied Drop ',
         type: MetricChartType.line,
         datas: data,
-        dataType: ChartDataType.CPUUser,
-        color: Colors.green);
-    interruptSeries = MetricChartSeries(
-        name: 'Interrupt ',
+        dataType: ChartDataType.NETReceivedDrop,
+        color: Colors.black);
+    rErrorSeries = MetricChartSeries(
+        name: 'Received Error ',
         type: MetricChartType.line,
         datas: data,
-        dataType: ChartDataType.CPUInterrupt,
-        color: Colors.yellow);
-    systemSeries = MetricChartSeries(
-        name: 'System ',
+        dataType: ChartDataType.NETReceivedError,
+        color: Colors.deepPurple);
+        
+    tByteSeries = MetricChartSeries(
+        name: 'Transmitted KB ',
+        type: MetricChartType.area,
+        datas: data,
+        dataType: ChartDataType.NETTransmitByte,
+        color: Colors.yellow); 
+    tDropSeries = MetricChartSeries(
+        name: 'Transmitted Drop ',
         type: MetricChartType.line,
         datas: data,
-        dataType: ChartDataType.CPUSytem,
-        color: Colors.brown);
+        dataType: ChartDataType.NETTransmitDrop,
+        color: Colors.deepOrange);
+    tErrorSeries = MetricChartSeries(
+        name: 'Transmitted Error ',
+        type: MetricChartType.line,
+        datas: data,
+        dataType: ChartDataType.NETTransmitError,
+        color: Colors.deepPurple);
     _timer = Timer.periodic(Duration(seconds: refreshRateVal), (timer) {
       if(mounted){
 
@@ -102,8 +116,8 @@ class CPURealtimeState extends State<CPURealtime> {
     });
 
     //web socket
-    widget.websocket.addListener("realtime/cpu", _addData);
-    widget.websocket.sendMessage({"path":"metric/cpu","data":1});
+    widget.websocket.addListener("realtime/net", _addData);
+    widget.websocket.sendMessage({"path":"metric/net","data":1});
 
 
     WidgetsBinding.instance.addPostFrameCallback((_) async { 
@@ -113,10 +127,14 @@ class CPURealtimeState extends State<CPURealtime> {
       refreshRate['refreshRate']?["controller"].addListener(() {
         _checkChange();
       });
-      chartKey.currentState?.addSeries(totalSeries);
-      chartKey.currentState?.addSeries(userSeries);
-      chartKey.currentState?.addSeries(systemSeries);
-      chartKey.currentState?.addSeries(interruptSeries);
+      chartKey.currentState?.addSeries(rByteSeries);
+      chartKey.currentState?.addSeries(tByteSeries);
+
+      chartKey.currentState?.addSeries(rDropSeries);
+      chartKey.currentState?.addSeries(tDropSeries);
+
+      chartKey.currentState?.addSeries(rErrorSeries);
+      chartKey.currentState?.addSeries(tErrorSeries);
       if (mounted) setState(() {});
     });
   }
@@ -183,8 +201,7 @@ class CPURealtimeState extends State<CPURealtime> {
             Container(
               child: MetricChart(
                 key: chartKey,
-                title: "CPU Usage(%) Over time",
-                maxY: 100,
+                title: "Network Usage Over time", 
               ),
             ),
             ExpansionTileBorderItem(
@@ -209,10 +226,12 @@ class CPURealtimeState extends State<CPURealtime> {
                   DropdownButton(
                       value: selectedType,
                       items: [
-                        ChartDataType.CPUTotal,
-                        ChartDataType.CPUUser,
-                        ChartDataType.CPUSytem,
-                        ChartDataType.CPUInterrupt,
+                        ChartDataType.NETReceivedByte,
+                        ChartDataType.NETReceivedDrop,
+                        ChartDataType.NETReceivedError,
+                        ChartDataType.NETTransmitByte,
+                        ChartDataType.NETTransmitDrop,
+                        ChartDataType.NETTransmitError,
                       ].map((ChartDataType items) {
                         return DropdownMenuItem(
                           value: items,
@@ -220,7 +239,7 @@ class CPURealtimeState extends State<CPURealtime> {
                         );
                       }).toList(),
                       onChanged: (t) {
-                        selectedType = t ?? ChartDataType.CPUTotal;
+                        selectedType = t ?? ChartDataType.NETReceivedByte;
                         if (mounted) {
                           setState(() {});
                         }
@@ -238,27 +257,37 @@ class CPURealtimeState extends State<CPURealtime> {
                   child: PaginatedDataTable(
                       columns: const [
                         DataColumn(label: Text('Date Time')),
-                        DataColumn(label: Text('Total(%)')),
-                        DataColumn(label: Text('User(%)')),
-                        DataColumn(label: Text('System(%)')),
-                        DataColumn(label: Text('Interrupt(%)')),
+                        DataColumn(label: Text('Received (KB)')),
+                        DataColumn(label: Text('Transmitted (KB)')),
+                        DataColumn(label: Text('R Drop')),
+                        DataColumn(label: Text('T Drop')),
+                        DataColumn(label: Text('R Error')),
+                        DataColumn(label: Text('T Error')),
                       ],
                       source: _DataSource(
                           data: data.where((e) {
-                        if (selectedType == ChartDataType.CPUTotal &&
-                            e.total >= threshold) {
+                        if (selectedType == ChartDataType.NETReceivedByte &&
+                            e.rkByte >= threshold) {
                           return true;
                         }
-                        if (selectedType == ChartDataType.CPUUser &&
-                            e.user >= threshold) {
+                        if (selectedType == ChartDataType.NETReceivedDrop &&
+                            e.rDrop >= threshold) {
                           return true;
                         }
-                        if (selectedType == ChartDataType.CPUSytem &&
-                            e.system >= threshold) {
+                        if (selectedType == ChartDataType.NETReceivedError &&
+                            e.rError >= threshold) {
                           return true;
                         }
-                        if (selectedType == ChartDataType.CPUInterrupt &&
-                            e.interrupt >= threshold) {
+                        if (selectedType == ChartDataType.NETTransmitByte &&
+                            e.tkByte >= threshold) {
+                          return true;
+                        }
+                        if (selectedType == ChartDataType.NETTransmitDrop &&
+                            e.tDrop >= threshold) {
+                          return true;
+                        }
+                        if (selectedType == ChartDataType.NETTransmitError &&
+                            e.tError >= threshold) {
                           return true;
                         }
                         return false;
@@ -273,7 +302,7 @@ class CPURealtimeState extends State<CPURealtime> {
   @override
   void dispose() {
     
-    widget.websocket.sendMessage({"path":"metric/cpu","data":0});
+    widget.websocket.sendMessage({"path":"metric/net","data":0});
     _timer
         .cancel();  
     super.dispose();
@@ -290,7 +319,7 @@ class CPURealtimeState extends State<CPURealtime> {
 
   _addData(d) async{
     print("recevied data $d");
-    data.add(CpuUsage.fromJson(d["data"]));
+    data.add(NETUsage.fromJson(d["data"]));
      
     final DateTime minNow = DateTime.now().subtract(Duration(seconds: lengthVal));
 
@@ -369,7 +398,7 @@ class CPURealtimeState extends State<CPURealtime> {
 }
 
 class _DataSource extends DataTableSource {
-  final List<CpuUsage> data;
+  final List<NETUsage> data;
   double? threshold;
 
   _DataSource({required this.data});
@@ -379,10 +408,12 @@ class _DataSource extends DataTableSource {
     final item = data[index];
     return DataRow(cells: [
       DataCell(Text(dt.format(item.dateTime.toLocal()))),
-      DataCell(Text(item.total.toStringAsFixed(2))),
-      DataCell(Text(item.user.toStringAsFixed(2))),
-      DataCell(Text(item.system.toStringAsFixed(2))),
-      DataCell(Text(item.interrupt.toStringAsFixed(2))),
+      DataCell(Text(item.rkByte.toStringAsFixed(2))),
+      DataCell(Text(item.tkByte.toStringAsFixed(2))),
+      DataCell(Text(item.rDrop.toString())),
+      DataCell(Text(item.tDrop.toString())),
+      DataCell(Text(item.rError.toString())),
+      DataCell(Text(item.tError.toString())),
     ]);
   }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fukuro_mobile/Model/node.dart';
-import 'package:fukuro_mobile/View/Component/Node/node_resource_screen.dart';
+import 'package:fukuro_mobile/Model/node.dart'; 
 import 'package:fukuro_mobile/View/app_setting.dart';
 import 'package:fukuro_mobile/View/home.dart';
 import 'package:fukuro_mobile/View/node_main.dart';
@@ -24,13 +23,7 @@ class MyApp extends StatelessWidget {
       return  MaterialApp(
       title: 'FUKURO',
       initialRoute: '/',
-        onGenerateRoute: (RouteSettings settings) {
-          if (settings.name == '/nodeResource') {
-            final args = settings.arguments as Node;
-            return MaterialPageRoute(
-              builder: (context) => NodeResourceScreen(thisNode: args,),
-            );
-          }
+        onGenerateRoute: (RouteSettings settings) { 
           if (settings.name == '/node') {
             final args = settings.arguments as Node;
             return MaterialPageRoute(

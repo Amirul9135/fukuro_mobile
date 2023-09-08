@@ -68,7 +68,7 @@ class MEMReportState extends State<MEMReport> {
         name: 'Buffer ',
         type: MetricChartType.line,
         datas: data,
-        dataType: ChartDataType.CPUInterrupt,
+        dataType: ChartDataType.MEMBuffered,
         color: Colors.brown);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -217,7 +217,9 @@ class MEMReportState extends State<MEMReport> {
                           return true;
                         }
                         return false;
-                      }).toList())),
+                      }).toList()
+                      )
+                      ),
                 ),
               ],
             ),

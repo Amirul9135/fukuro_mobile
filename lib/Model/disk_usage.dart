@@ -5,13 +5,13 @@ class DISKUsage implements ChartData {
   DateTime _dateTime = DateTime.now(); 
   double _utilization = 0;
   double _readSpeed = 0;
-  double _writeSpeed = 0; 
+  double _writeSpeed = 0;  
 
   DISKUsage.fromJson(Map<String, dynamic> json) {  
     
     _utilization = json["utilization"].toDouble(); 
     _readSpeed = json["readSpeed"].toDouble(); 
-    _writeSpeed = json["writeSpeed"].toDouble(); 
+    _writeSpeed = json["writeSpeed"].toDouble();  
 
     if (json.containsKey("interval_group")) {
       _dateTime = DateTime.parse(json["interval_group"]);

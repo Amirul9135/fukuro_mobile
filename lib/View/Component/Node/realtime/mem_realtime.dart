@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fukuro_mobile/Controller/WebSocketClient.dart';
 import 'package:fukuro_mobile/Controller/utilities.dart';
-import 'package:fukuro_mobile/Model/chart_data.dart';
-import 'package:fukuro_mobile/Model/cpu_usage.dart';
+import 'package:fukuro_mobile/Model/chart_data.dart'; 
+import 'package:fukuro_mobile/Model/mem_usage.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/Component/Node/report/metric_chart.dart';
@@ -14,32 +14,30 @@ import 'package:fukuro_mobile/View/Component/fukuro_form.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 
-class CPURealtime extends StatefulWidget {
+class MEMRealtime extends StatefulWidget {
   final Node node;
   final Function(Widget)? fnDelete;
   final WebSocketClient websocket;
-  const CPURealtime({Key? key, required this.node, this.fnDelete,required this.websocket})
+  const MEMRealtime({Key? key, required this.node, this.fnDelete,required this.websocket})
       : super(key: key);
 
   @override
-  CPURealtimeState createState() => CPURealtimeState();
+  MEMRealtimeState createState() => MEMRealtimeState();
 }
 
-class CPURealtimeState extends State<CPURealtime> {
+class MEMRealtimeState extends State<MEMRealtime> {
   final GlobalKey<MetricChartState> chartKey = GlobalKey();
 
-  final List<CpuUsage> data = [];
+  final List<MEMUsage> data = [];
 
   final Map<String, Map<dynamic, dynamic>> periodLength = {};
   final Map<String, Map<dynamic, dynamic>> refreshRate = {};
-  final Map<String, Map<dynamic, dynamic>> agentInterval = {};
 
-  double threshold = 0;
-  late MetricChartSeries totalSeries;
-  late MetricChartSeries userSeries;
-  late MetricChartSeries interruptSeries;
-  late MetricChartSeries systemSeries;
-  ChartDataType selectedType = ChartDataType.CPUTotal;
+  double threshold = 0; 
+  late MetricChartSeries usedSeries;
+  late MetricChartSeries cachedSeries;
+  late MetricChartSeries bufferSeries;
+  ChartDataType selectedType = ChartDataType.MEMUsed; 
 
   int lengthVal = 10;
   int refreshRateVal = 1;
@@ -66,31 +64,24 @@ class CPURealtimeState extends State<CPURealtime> {
             isTimeUnit: true)
         .build();
     refreshRate['refreshRate']?["refresh"] = true;
-    
-
-    totalSeries = MetricChartSeries(
-        name: 'Total ',
+ 
+    usedSeries = MetricChartSeries(
+        name: 'Used ',
         type: MetricChartType.area,
         datas: data,
-        dataType: ChartDataType.CPUTotal,
+        dataType: ChartDataType.MEMUsed,
         color: Colors.blue);
-    userSeries = MetricChartSeries(
-        name: 'User ',
+    cachedSeries = MetricChartSeries(
+        name: 'Cached ',
         type: MetricChartType.line,
         datas: data,
-        dataType: ChartDataType.CPUUser,
-        color: Colors.green);
-    interruptSeries = MetricChartSeries(
-        name: 'Interrupt ',
-        type: MetricChartType.line,
-        datas: data,
-        dataType: ChartDataType.CPUInterrupt,
+        dataType: ChartDataType.MEMCached,
         color: Colors.yellow);
-    systemSeries = MetricChartSeries(
-        name: 'System ',
+    bufferSeries = MetricChartSeries(
+        name: 'Buffer ',
         type: MetricChartType.line,
         datas: data,
-        dataType: ChartDataType.CPUSytem,
+        dataType: ChartDataType.MEMBuffered,
         color: Colors.brown);
     _timer = Timer.periodic(Duration(seconds: refreshRateVal), (timer) {
       if(mounted){
@@ -102,8 +93,8 @@ class CPURealtimeState extends State<CPURealtime> {
     });
 
     //web socket
-    widget.websocket.addListener("realtime/cpu", _addData);
-    widget.websocket.sendMessage({"path":"metric/cpu","data":1});
+    widget.websocket.addListener("realtime/mem", _addData);
+    widget.websocket.sendMessage({"path":"metric/mem","data":1});
 
 
     WidgetsBinding.instance.addPostFrameCallback((_) async { 
@@ -113,10 +104,9 @@ class CPURealtimeState extends State<CPURealtime> {
       refreshRate['refreshRate']?["controller"].addListener(() {
         _checkChange();
       });
-      chartKey.currentState?.addSeries(totalSeries);
-      chartKey.currentState?.addSeries(userSeries);
-      chartKey.currentState?.addSeries(systemSeries);
-      chartKey.currentState?.addSeries(interruptSeries);
+      chartKey.currentState?.addSeries(usedSeries);
+      chartKey.currentState?.addSeries(cachedSeries);
+      chartKey.currentState?.addSeries(bufferSeries); 
       if (mounted) setState(() {});
     });
   }
@@ -183,7 +173,7 @@ class CPURealtimeState extends State<CPURealtime> {
             Container(
               child: MetricChart(
                 key: chartKey,
-                title: "CPU Usage(%) Over time",
+                title: "Memory Usage(%) Over time",
                 maxY: 100,
               ),
             ),
@@ -209,10 +199,9 @@ class CPURealtimeState extends State<CPURealtime> {
                   DropdownButton(
                       value: selectedType,
                       items: [
-                        ChartDataType.CPUTotal,
-                        ChartDataType.CPUUser,
-                        ChartDataType.CPUSytem,
-                        ChartDataType.CPUInterrupt,
+                        ChartDataType.MEMUsed,
+                        ChartDataType.MEMBuffered,
+                        ChartDataType.MEMCached,
                       ].map((ChartDataType items) {
                         return DropdownMenuItem(
                           value: items,
@@ -220,7 +209,7 @@ class CPURealtimeState extends State<CPURealtime> {
                         );
                       }).toList(),
                       onChanged: (t) {
-                        selectedType = t ?? ChartDataType.CPUTotal;
+                        selectedType = t ?? ChartDataType.MEMUsed;
                         if (mounted) {
                           setState(() {});
                         }
@@ -238,31 +227,27 @@ class CPURealtimeState extends State<CPURealtime> {
                   child: PaginatedDataTable(
                       columns: const [
                         DataColumn(label: Text('Date Time')),
-                        DataColumn(label: Text('Total(%)')),
-                        DataColumn(label: Text('User(%)')),
-                        DataColumn(label: Text('System(%)')),
-                        DataColumn(label: Text('Interrupt(%)')),
+                        DataColumn(label: Text('Used(%)')),
+                        DataColumn(label: Text('Cached(%)')),
+                        DataColumn(label: Text('Buffer(%)')),
                       ],
                       source: _DataSource(
                           data: data.where((e) {
-                        if (selectedType == ChartDataType.CPUTotal &&
-                            e.total >= threshold) {
+                        if (selectedType == ChartDataType.MEMUsed &&
+                            e.used >= threshold) {
                           return true;
                         }
-                        if (selectedType == ChartDataType.CPUUser &&
-                            e.user >= threshold) {
+                        if (selectedType == ChartDataType.MEMBuffered &&
+                            e.buffer >= threshold) {
                           return true;
                         }
-                        if (selectedType == ChartDataType.CPUSytem &&
-                            e.system >= threshold) {
-                          return true;
-                        }
-                        if (selectedType == ChartDataType.CPUInterrupt &&
-                            e.interrupt >= threshold) {
+                        if (selectedType == ChartDataType.MEMCached &&
+                            e.cached >= threshold) {
                           return true;
                         }
                         return false;
-                      }).toList())),
+                      }).toList()
+                      )),
                 ),
               ],
             ),
@@ -273,7 +258,7 @@ class CPURealtimeState extends State<CPURealtime> {
   @override
   void dispose() {
     
-    widget.websocket.sendMessage({"path":"metric/cpu","data":0});
+    widget.websocket.sendMessage({"path":"metric/mem","data":0});
     _timer
         .cancel();  
     super.dispose();
@@ -290,7 +275,7 @@ class CPURealtimeState extends State<CPURealtime> {
 
   _addData(d) async{
     print("recevied data $d");
-    data.add(CpuUsage.fromJson(d["data"]));
+    data.add(MEMUsage.fromJson(d["data"]));
      
     final DateTime minNow = DateTime.now().subtract(Duration(seconds: lengthVal));
 
@@ -369,7 +354,7 @@ class CPURealtimeState extends State<CPURealtime> {
 }
 
 class _DataSource extends DataTableSource {
-  final List<CpuUsage> data;
+  final List<MEMUsage> data;
   double? threshold;
 
   _DataSource({required this.data});
@@ -379,10 +364,9 @@ class _DataSource extends DataTableSource {
     final item = data[index];
     return DataRow(cells: [
       DataCell(Text(dt.format(item.dateTime.toLocal()))),
-      DataCell(Text(item.total.toStringAsFixed(2))),
-      DataCell(Text(item.user.toStringAsFixed(2))),
-      DataCell(Text(item.system.toStringAsFixed(2))),
-      DataCell(Text(item.interrupt.toStringAsFixed(2))),
+      DataCell(Text(item.used.toStringAsFixed(2))),
+      DataCell(Text(item.cached.toStringAsFixed(2))),
+      DataCell(Text(item.buffer.toStringAsFixed(2))),
     ]);
   }
 

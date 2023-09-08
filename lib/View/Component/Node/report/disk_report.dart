@@ -180,7 +180,7 @@ class DISKReportState extends State<DISKReport> {
                         );
                       }).toList(),
                       onChanged: (t) {
-                        selectedType = t ?? ChartDataType.CPUTotal;
+                        selectedType = t ?? ChartDataType.DISKUtilization;
                         if (mounted) {
                           setState(() {});
                         }
