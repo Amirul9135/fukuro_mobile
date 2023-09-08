@@ -7,6 +7,8 @@ enum TimeUnit { second, minute, hour, day }
 
 enum Metrics { cpu, memory, disk, network }
 
+enum CommandType {command, tool}
+
 int convertVal(int val, TimeUnit from, TimeUnit to) {
   switch (from) {
     case TimeUnit.second:

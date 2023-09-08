@@ -6,8 +6,9 @@ class BigButton extends StatelessWidget {
   final String label;
   final Function? action;
   final dynamic value;
+  final Color? color;
 
- const  BigButton({super.key, required this.icon, required this.label,this.action,this.value});
+ const  BigButton({super.key, required this.icon, required this.label,this.action,this.value,this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,7 @@ class BigButton extends StatelessWidget {
       },
       child: Container(
       decoration: BoxDecoration(
-        color: Colors.blue, // Button background color
+        color: color?? Colors.blue, // Button background color
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Column(

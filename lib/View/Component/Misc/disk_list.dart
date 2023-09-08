@@ -12,7 +12,7 @@ class DiskList extends StatelessWidget {
   final String? title;
 
   late final Future<List<DiskDrive>> disks =
-      NodeController.getDiskList(1); // node id later
+      NodeController.getDiskList(node.getNodeId()); // node id later
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -33,7 +33,7 @@ class DiskList extends StatelessWidget {
                 shrinkWrap: true,
                 children: [
                   Text(
-                    title?? "Disk List",
+                    (snapshot.data!.isEmpty)? "No Disk Available" :( title?? "Disk List"),
                     textAlign: TextAlign.center,
                     style:const TextStyle(
                                       fontSize: 22,

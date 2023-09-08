@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Misc/disk_list.dart';
+import 'package:fukuro_mobile/View/Component/Node/realtime/node_realtime_screen.dart';
 import 'package:fukuro_mobile/View/Component/Node/report/cpu_report.dart';
 import 'package:fukuro_mobile/View/Component/Node/report/metric_chart.dart';
 import 'package:fukuro_mobile/View/Component/Node/report/metric_report_screen.dart';
@@ -74,7 +75,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                 Text("test stage"),
+                 NodeRealtimeScreen(node: (){Node test = Node();test.setNodID(1); return test;}()),
                   NodeList(),
                   Text("notification"),
                 ],

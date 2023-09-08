@@ -183,7 +183,8 @@ class FukuroFormState extends State<FukuroForm> {
                     return null;
                   }
                 }
-              } else {
+              } 
+              else {
                 int val = value?.length ?? 0;
                 if (fieldConfig['lengthMax'] != null || fieldConfig['lengthMin'] != null) {
                   if (val <= fieldConfig['lengthMax'] && val >= fieldConfig['lengthMin']) {
