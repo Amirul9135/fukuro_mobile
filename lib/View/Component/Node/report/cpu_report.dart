@@ -273,7 +273,7 @@ class CPUReportState extends State<CPUReport> {
     data.clear();
     if (mounted) setState(() {});
     data.addAll(await MetricController.getHistoricalCPUReading(
-        1, dateStart, intvl, dateEnd));
+        widget.node.getNodeId(), dateStart, intvl, dateEnd));
     if (mounted) {
       setState(() {});
     }

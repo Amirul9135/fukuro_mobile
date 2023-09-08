@@ -5,6 +5,7 @@ import 'package:fukuro_mobile/View/Component/Node/config/node_config_screen.dart
 import 'package:fukuro_mobile/View/Component/Node/node_details.dart';
 import 'package:fukuro_mobile/View/Component/Node/node_resource_screen.dart';
 import 'package:fukuro_mobile/View/Component/Node/report/metric_chart.dart';
+import 'package:fukuro_mobile/View/Component/Node/report/metric_report_screen.dart';
 
 class NodeMainScreen extends StatefulWidget {
   const NodeMainScreen({Key? key, required this.thisNode}) : super(key: key);
@@ -122,7 +123,7 @@ class NodeMainScreenState extends State<NodeMainScreen> {
             : _selectedMenuItem == 'Settings' ? Text('setting')
             : _selectedMenuItem == 'Res_CPU' ? NodeResourceScreen(thisNode: widget.thisNode)
             : _selectedMenuItem == 'Node_Config' ? NodeConfigScreen(node: widget.thisNode,)
-            : _selectedMenuItem == 'Reports'? MetricChart(title: 'test',)
+            : _selectedMenuItem == 'Reports'? MetricReportScreen(node: widget.thisNode)
                 : Text("placeholder"));
   }
 }

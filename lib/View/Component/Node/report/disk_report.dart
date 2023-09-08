@@ -1,8 +1,7 @@
 import 'package:expansion_tile_group/expansion_tile_group.dart';
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/metric_controller.dart';
-import 'package:fukuro_mobile/Model/chart_data.dart';
-import 'package:fukuro_mobile/Model/cpu_usage.dart';
+import 'package:fukuro_mobile/Model/chart_data.dart'; 
 import 'package:fukuro_mobile/Model/disk_usage.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
@@ -14,7 +13,8 @@ import 'package:sizer/sizer.dart';
 class DISKReport extends StatefulWidget {
   final Node node;
   final Function? fnDelete;
-  const DISKReport({Key? key, required this.node, this.fnDelete})
+  final String diskName;
+  const DISKReport({Key? key, required this.node, this.fnDelete,required this.diskName})
       : super(key: key);
 
   @override
@@ -145,7 +145,7 @@ class DISKReportState extends State<DISKReport> {
             Container(
               child: MetricChart(
                 key: chartKey,
-                title: "Disk Usage Over time", 
+                title: "Disk ("+ widget.diskName + ") Usage Over time", 
               ),
             ),
             ExpansionTileBorderItem(
@@ -259,7 +259,7 @@ class DISKReportState extends State<DISKReport> {
     data.clear();
     if (mounted) setState(() {});
     data.addAll(await MetricController.getHistoricalDiskReading(
-        1,"sda", dateStart, intvl, dateEnd));
+        widget.node.getNodeId(),widget.diskName, dateStart, intvl, dateEnd));
     if (mounted) {
       setState(() {});
     }

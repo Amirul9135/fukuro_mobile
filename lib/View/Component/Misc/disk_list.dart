@@ -1,23 +1,18 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/node_controller.dart';
-import 'package:fukuro_mobile/Controller/utilities.dart';
 import 'package:fukuro_mobile/Model/dsik_drive.dart';
 import 'package:fukuro_mobile/Model/node.dart';
-import 'package:fukuro_mobile/View/Component/Misc/big_button.dart';
-import 'package:sizer/sizer.dart';
 
 class DiskList extends StatelessWidget {
-  DiskList({
-    super.key,
-    this.selectDisk,
-    required this.node,
-  });
+  DiskList(
+      {super.key, required this.node, this.fnSelect, this.showMonitorStat,this.title});
   final Node node;
+  final Function(DiskDrive)? fnSelect;
+  final bool? showMonitorStat;
+  final String? title;
 
-  final Function(Metrics)? selectDisk;
-
-  late final Future<List<DiskDrive>> disks = NodeController.getDiskList(1);
+  late final Future<List<DiskDrive>> disks =
+      NodeController.getDiskList(1); // node id later
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -29,48 +24,99 @@ class DiskList extends StatelessWidget {
           return Text('Error: ${snapshot.error}');
         } else {
           return Container(
-              padding: const EdgeInsets.all(2),
-              child: GridView.builder(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: ListView(
                 shrinkWrap: true,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  childAspectRatio: 4,
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 15.0,
-                  mainAxisSpacing: 15.0,
-                ),
-                itemCount: snapshot.data!.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      border: Border.all(
-                        color: Colors.blue, // Border color
-                        width: 2.0, // Border width
-                      ),
+                children: [
+                  Text(
+                    title?? "Disk List",
+                    textAlign: TextAlign.center,
+                    style:const TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold),
+                  ),
+                  Divider(),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      childAspectRatio: 4,
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 15.0,
+                      mainAxisSpacing: 15.0,
                     ),
-                    child: ListView(shrinkWrap: true, children: [
-                      Text(
-                        snapshot.data![index].name,
-                        textAlign: TextAlign.start,
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      Row(
-                        children: [
-                          Text(snapshot.data![index].strUsed),
-                          const Text(" / "),
-                          Text(snapshot.data![index].strSize)
-                        ],
-                      ),
-                      LinearProgressIndicator(
-                        minHeight: 10,
-                        value: 1 * snapshot.data![index].usedPercent / 100,
-                        semanticsLabel: 'Linear progress indicator',
-                      ),
-                    ]),
-                  );
-                },
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          fnSelect?.call(snapshot.data![index]);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: () {
+                              if (showMonitorStat == true) {
+                                if (snapshot.data![index].monitored == true) {
+                                  return Colors.lightBlue.withOpacity(.3);
+                                }
+                              }
+                            }(),
+                            border: Border.all(
+                              color: Colors.blue, // Border color
+                              width: 2.0, // Border width
+                            ),
+                          ),
+                          child: ListView(shrinkWrap: true, children: [
+                            Row(
+                              children: [
+                                Text(
+                                  snapshot.data![index].name,
+                                  textAlign: TextAlign.start,
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const Spacer(),
+                                (showMonitorStat == true &&
+                                        snapshot.data![index].monitored == true)
+                                    ? const Tooltip(
+                                        message:
+                                            "Monitoring is turned on for this disk",
+                                        child: Icon(
+                                          Icons.monitor_heart_outlined,
+                                          color: Colors.blue,
+                                        ))
+                                    : Container()
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(snapshot.data![index].strUsed),
+                                const Text(" / "),
+                                Text(snapshot.data![index].strSize),
+                                Text(" (" +
+                                    snapshot.data![index].usedPercent
+                                        .toStringAsPrecision(2) +
+                                    "%)")
+                              ],
+                            ),
+                            LinearProgressIndicator(
+                              minHeight: 20,
+                              value:
+                                  1 * snapshot.data![index].usedPercent / 100,
+                              semanticsLabel: 'Linear progress indicator',
+                            ),
+                          ]),
+                        ),
+                      );
+                    },
+                  )
+                ],
               ));
         }
       },

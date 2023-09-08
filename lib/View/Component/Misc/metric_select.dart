@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/utilities.dart';
-import 'package:fukuro_mobile/View/Component/Misc/big_button.dart';
-import 'package:sizer/sizer.dart';
+import 'package:fukuro_mobile/View/Component/Misc/big_button.dart'; 
 
 class MetricSelect extends StatelessWidget {
   MetricSelect({

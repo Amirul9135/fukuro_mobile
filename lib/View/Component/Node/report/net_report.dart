@@ -303,7 +303,7 @@ class NETReportState extends State<NETReport> {
     data.clear();
     if (mounted) setState(() {});
     data.addAll(await MetricController.getHistoricalNETReading(
-        1, dateStart, intvl, dateEnd));
+        widget.node.getNodeId(), dateStart, intvl, dateEnd));
     if (mounted) {
       setState(() {});
     }

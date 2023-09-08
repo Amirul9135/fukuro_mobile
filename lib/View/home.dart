@@ -74,7 +74,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  DiskList(node: Node()),
+                 Text("test stage"),
                   NodeList(),
                   Text("notification"),
                 ],

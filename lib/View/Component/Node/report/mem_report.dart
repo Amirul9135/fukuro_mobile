@@ -1,8 +1,7 @@
 import 'package:expansion_tile_group/expansion_tile_group.dart';
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/metric_controller.dart';
-import 'package:fukuro_mobile/Model/chart_data.dart';
-import 'package:fukuro_mobile/Model/cpu_usage.dart';
+import 'package:fukuro_mobile/Model/chart_data.dart'; 
 import 'package:fukuro_mobile/Model/mem_usage.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
@@ -259,7 +258,7 @@ class MEMReportState extends State<MEMReport> {
     data.clear();
     if (mounted) setState(() {});
     data.addAll(await MetricController.getHistoricalMEMReading(
-        1, dateStart, intvl, dateEnd));
+        widget.node.getNodeId(), dateStart, intvl, dateEnd));
     if (mounted) {
       setState(() {});
     }
