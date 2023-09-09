@@ -1,12 +1,8 @@
-
-import 'package:fukuro_mobile/Controller/fukuro_request.dart';
+ 
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/register.dart';
  
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:fukuro_mobile/Controller/SecureStorage.dart';
+import 'package:flutter/material.dart'; 
 import 'package:fukuro_mobile/Controller/Authentication.dart'; 
 
 class Login extends StatefulWidget {

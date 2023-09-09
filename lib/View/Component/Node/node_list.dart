@@ -24,9 +24,12 @@ class NodeListState extends State<NodeList> {
           _nodes.addAll(await NodeController.fetchAllUserOwnedNodes());
           ready = true;
           //loadData();
+          if(mounted){
+
           setState(() {
             
           });
+          }
         });
   }
 

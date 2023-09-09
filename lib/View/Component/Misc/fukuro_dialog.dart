@@ -134,8 +134,8 @@ class FukuroDialog extends StatelessWidget {
     );
   }
 
-  static warning(context, title, message) {
-    showDialog(
+  static warning(context, title, message)  {
+   return showDialog(
         context: context,
         builder: (_) => FukuroDialog(
               title: title,
@@ -145,7 +145,7 @@ class FukuroDialog extends StatelessWidget {
   }
 
   static error(context, title, message) {
-    showDialog(
+   return showDialog(
         context: context,
         builder: (_) => FukuroDialog(
               title: title,
@@ -155,7 +155,7 @@ class FukuroDialog extends StatelessWidget {
   }
 
   static info(context, title, message) {
-    showDialog(
+  return  showDialog(
         context: context,
         builder: (_) => FukuroDialog(
               title: title,
@@ -165,7 +165,7 @@ class FukuroDialog extends StatelessWidget {
   }
   
   static success(context, title, message) {
-    showDialog(
+  return  showDialog(
         context: context,
         builder: (_) => FukuroDialog(
               title: title,

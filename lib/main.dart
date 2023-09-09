@@ -1,6 +1,5 @@
  
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart'; 
  
 import 'package:fukuro_mobile/Model/node.dart'; 
 import 'package:fukuro_mobile/View/app_setting.dart';

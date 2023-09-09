@@ -1,14 +1,14 @@
-import 'dart:io';
+ 
 
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart'; 
+import 'package:path/path.dart';
 
 class NotificationDatabase {
   static const String NotificationDB = "notification";
   Database? _database;
 
   Future<void> initialize(String dbname) async {
-    String path = join(await getDatabasesPath(), dbname); 
+    String path = join(await getDatabasesPath(), dbname);
     print("db part $path");
     _database = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
@@ -36,6 +36,17 @@ class NotificationDatabase {
     }
 
     await _database!.delete(tableName, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<void> deleteDatas(String tableName, List<int> ids) async {
+    if (_database == null) {
+      throw Exception("Database not initialized. Call initialize() first.");
+    }
+
+    String idString =
+        ids.map((id) => '?').join(','); // Creates a string like ?,?,?,...
+    await _database!
+        .delete(tableName, where: 'id IN ($idString)', whereArgs: ids);
   }
 
   Future<void> close() async {

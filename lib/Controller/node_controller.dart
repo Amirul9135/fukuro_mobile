@@ -8,6 +8,36 @@ import 'fukuro_request.dart';
 import 'package:http/http.dart' as http;
 
 class NodeController {
+
+  static Future<FukuroResponse> toggleAccess(int nodeId,int userId,bool access) async{
+    FukuroRequest req = FukuroRequest('node/$nodeId/grant/$userId');
+    http.Response httpr;
+    if(access){
+      httpr = await req.post();
+    }
+    else{
+      httpr = await req.del();
+    }
+    return FukuroResponse(res: httpr);
+  }
+
+  static Future<FukuroResponse> findUser(int nodeId,bool access,String key) async{
+    String url = 'user/find/$nodeId?'; 
+    print(url);
+    print("test $access");
+    if(access == true){
+      url += "access=true";
+    }
+    if(key.isNotEmpty){
+       List<String> parts = key.split(' ');
+      url +=  parts.map((part) => '&k=$part').join();
+    }
+    FukuroRequest req = FukuroRequest(url);
+    http.Response httpr = await req.get();
+    return FukuroResponse(res: httpr);
+
+  }
+
   static Future<FukuroResponse> toggleDisk(
       int nodeId, String diskname, bool enable) async {
     FukuroRequest req = FukuroRequest('config/$nodeId/disk/$diskname');

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/utilities.dart';
 import 'package:fukuro_mobile/Model/node.dart';
+import 'package:fukuro_mobile/View/Component/Node/collaboration_screen.dart';
 import 'package:fukuro_mobile/View/Component/Node/config/node_config_screen.dart';
 import 'package:fukuro_mobile/View/Component/Node/node_details.dart';
 import 'package:fukuro_mobile/View/Component/Node/realtime/node_realtime_screen.dart';
@@ -141,6 +142,6 @@ class NodeMainScreenState extends State<NodeMainScreen> {
                         ? MetricReportScreen(node: widget.thisNode)
                         : _selectedMenuItem == 'realtime'
                             ? NodeRealtimeScreen(node: widget.thisNode)
-                            : Text("placeholder"));
+                            : _selectedMenuItem =="Collaboration"? CollaborationScreen(node: widget.thisNode):  Text("placeholder"));
   }
 }
