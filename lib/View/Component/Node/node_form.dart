@@ -4,7 +4,7 @@ import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/Component/fukuro_form.dart';
 
-import '../../Controller/utilities.dart';
+import 'package:fukuro_mobile/Controller/utilities.dart';
 
 class NodeForm extends StatefulWidget {
   @override

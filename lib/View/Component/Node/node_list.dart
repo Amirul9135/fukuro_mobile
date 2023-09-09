@@ -80,45 +80,5 @@ class NodeListState extends State<NodeList> {
     // Clean up resources or subscriptions here
     super.dispose();
   } 
-
-/*ddummy
-  void loadData() {
-    Node test1 = Node();
-    test1.setName("test1");
-    test1.setIpAddress("test11111");
-    test1.setDescription("descdsdsadsadddddddddddddddddddddddddddddddddddddsadassssssssssssssssssssssssssssssssdasdsadasdasdadadasssssssssssssssssssssssssssssssssssssssssss");
-    Node tests = Node();
-    tests.setName("test2");
-    tests.setIpAddress("2222");
-    tests.setDescription("desc");
-
-    _nodes.add(test1);
-    _nodes.add(tests);
-    _nodes.add(test1);
-    _nodes.add(tests);
-    _nodes.add(test1);
-    _nodes.add(tests);
-    _nodes.add(test1);
-    _nodes.add(tests);
-    _nodes.add(test1);
-    _nodes.add(tests);
-    _nodes.add(test1);
-    _nodes.add(tests);
-    _nodes.add(test1);
-    _nodes.add(tests);
-    _nodes.add(test1);
-    _nodes.add(tests);
-    _nodes.add(test1);
-    _nodes.add(tests);
-    _nodes.add(test1);
-    _nodes.add(tests);
-    _nodes.add(test1);
-    _nodes.add(tests);
-    _nodes.add(test1);
-    _nodes.add(tests);
-    _nodes.add(test1);
-    _nodes.add(tests);
-    _nodes.add(test1);
-    _nodes.add(tests);
-  }*/
+ 
 }

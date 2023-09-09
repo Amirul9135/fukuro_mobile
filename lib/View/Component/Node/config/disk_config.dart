@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/fukuro_request.dart';
-import 'package:fukuro_mobile/Controller/node_config.dart'; 
+import 'package:fukuro_mobile/Controller/node_config.dart';
+import 'package:fukuro_mobile/Controller/node_controller.dart';
+import 'package:fukuro_mobile/Model/dsik_drive.dart';
 import 'package:fukuro_mobile/Model/node.dart';
+import 'package:fukuro_mobile/View/Component/Misc/disk_list.dart';
 import 'package:fukuro_mobile/View/Component/Misc/expandable_fab.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/Component/Node/config/node_config_form.dart';
@@ -18,17 +21,21 @@ class DISKConfiguration extends StatefulWidget {
 
 class DISKConfigurationState extends State<DISKConfiguration> {
   bool loading = true;
-  final  Map<String, dynamic> config = {};
+  final Map<String, dynamic> config = {};
   final GlobalKey<NodeConfigFormState> formStateKey = GlobalKey();
-  NodeConfigForm form = NodeConfigForm(config:{},node: Node(),metricLabel: 'disk',thresholdUnit: 'disk',);
+  NodeConfigForm form = NodeConfigForm(
+    config: {},
+    node: Node(),
+    metricLabel: 'disk',
+    thresholdUnit: 'disk',
+  );
 
   @override
   void initState() {
     super.initState();
     _initialize();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-  });
+    WidgetsBinding.instance.addPostFrameCallback((_) async {});
   }
 
   @override
@@ -55,8 +62,14 @@ class DISKConfigurationState extends State<DISKConfiguration> {
         body: Container(
             padding: EdgeInsets.fromLTRB(5.w, 2.h, 5.w, 5.h),
             child: SingleChildScrollView(
-                child: Column(children: [ 
-              form, 
+                child: Column(children: [
+              DiskList(
+                node: widget.node,
+                showMonitorStat: true,
+                title: "Disk Status",
+                fnSelect: _selectDisk,
+              ),
+              form,
             ]))),
         floatingActionButton: ExpandableFab(
           icon: const Icon(Icons.ads_click),
@@ -79,24 +92,75 @@ class DISKConfigurationState extends State<DISKConfiguration> {
       );
     }
   }
-  _reset(){
-    FukuroDialog msg =  FukuroDialog(
-        title: "RESET",
-        message:
-            "Revert unsaved values and load last setting?",
-        mode: FukuroDialog.WARNING,
+
+  _selectDisk(DiskDrive disk) {
+    FukuroDialog msg;
+    if (disk.monitored == true) {
+      msg = FukuroDialog(
+        title: "DISABLE",
+        message: "Disable Monitoring for disk " + disk.name + "?",
+        mode: FukuroDialog.QUESTION,
         NoBtn: true,
         BtnText: "Yes",
       );
-      
+    } else {
+      msg = FukuroDialog(
+        title: "ENABLE",
+        message: "Enable Monitoring for disk " + disk.name + "?",
+        mode: FukuroDialog.QUESTION,
+        NoBtn: true,
+        BtnText: "Yes",
+      );
+    }
+
     showDialog(context: context, builder: (_) => msg).then((value) async {
-      if(msg.okpressed){
+      if (msg.okpressed) {
+        disk.monitored = !disk.monitored;
+        FukuroResponse res = await NodeController.toggleDisk(
+            widget.node.getNodeId(), disk.name, disk.monitored);
+        if (res.ok()) {
+          if (mounted) {
+            FukuroDialog.success(
+                context,
+                "Success",
+                "Monitoring " +
+                    (disk.monitored ? "Enabled" : "Disabled") +
+                    " For " +
+                    disk.name);
+            setState(() {});
+          }
+        } else {
+          if (mounted) {
+            FukuroDialog.error(
+                context,
+                "Failed",
+                "Failed to " +
+                    (disk.monitored ? "Enabled" : "Disabled") +
+                    disk.name);
+          }
+        }
         _initialize();
       }
     });
   }
-  _initialize(){
-    
+
+  _reset() {
+    FukuroDialog msg = FukuroDialog(
+      title: "RESET",
+      message: "Revert unsaved values and load last setting?",
+      mode: FukuroDialog.WARNING,
+      NoBtn: true,
+      BtnText: "Yes",
+    );
+
+    showDialog(context: context, builder: (_) => msg).then((value) async {
+      if (msg.okpressed) {
+        _initialize();
+      }
+    });
+  }
+
+  _initialize() {
     print('init ni');
     config['extract'] = {};
     config['realtime'] = {};
@@ -105,84 +169,88 @@ class DISKConfigurationState extends State<DISKConfiguration> {
     config['active'] = {};
     config['threshold'] = {};
     _loadConfig();
-    form = NodeConfigForm(key: formStateKey, config:config,node: widget.node,metricLabel: 'disk',thresholdUnit: '%(utilization)',thresholdMax: 100,);
+    form = NodeConfigForm(
+      key: formStateKey,
+      config: config,
+      node: widget.node,
+      metricLabel: 'disk',
+      thresholdUnit: '%(utilization)',
+      thresholdMax: 100,
+    );
   }
-  _save() async {  
-    print('save');
-    try{
-      
-    formStateKey.currentState?.save();
-    dynamic payload = {};
-    payload['extract'] = config['extract']['value'];
-    payload['realtime'] = config['realtime']['value'];
-    payload['tick'] = config['tick']['value'];
-    payload['cooldown'] = config['cooldown']['value'];
-    payload['threshold'] = config['threshold']['value']; 
-    print(payload) ; 
-    FukuroResponse res = await NodeConfig.updateMetricConfigValues(widget.node.getNodeId(), DISKConfiguration.label, payload);
-    if(res.ok()){
-      if(mounted){
-        if( payload['threshold'] != 0){
-          FukuroResponse res2 = await NodeConfig.enableNotification(widget.node.getNodeId(), DISKConfiguration.label, payload['threshold']);
-          if(!res2.ok()){
-            if(mounted){
-              String msg = res2.msg();
-              FukuroDialog.error(context, 'Failed', 'Unable to save notification $msg');
-            }
-            
-              return;
-          }
-        }
-        if(mounted){ 
-          FukuroDialog.success(context, 'Saved', '');
-        }
-        _initialize();
-      }
-    }
-    else{
-      if(mounted){
-        FukuroDialog.error(context, 'Failed to Save', res.msg());
-      }
 
-    }
-    }
-    catch(e){
+  _save() async {
+    print('save');
+    try {
+      formStateKey.currentState?.save();
+      dynamic payload = {};
+      payload['extract'] = config['extract']['value'];
+      payload['realtime'] = config['realtime']['value'];
+      payload['tick'] = config['tick']['value'];
+      payload['cooldown'] = config['cooldown']['value'];
+      payload['threshold'] = config['threshold']['value'];
+      print(payload);
+      FukuroResponse res = await NodeConfig.updateMetricConfigValues(
+          widget.node.getNodeId(), DISKConfiguration.label, payload);
+      if (res.ok()) {
+        if (mounted) {
+          if (payload['threshold'] != 0) {
+            FukuroResponse res2 = await NodeConfig.enableNotification(
+                widget.node.getNodeId(),
+                DISKConfiguration.label,
+                payload['threshold']);
+            if (!res2.ok()) {
+              if (mounted) {
+                String msg = res2.msg();
+                FukuroDialog.error(
+                    context, 'Failed', 'Unable to save notification $msg');
+              }
+
+              return;
+            }
+          }
+          if (mounted) {
+            FukuroDialog.success(context, 'Saved', '');
+          }
+          _initialize();
+        }
+      } else {
+        if (mounted) {
+          FukuroDialog.error(context, 'Failed to Save', res.msg());
+        }
+      }
+    } catch (e) {
       print('error $e');
     }
-    setState(() {
-      
-    });
+    setState(() {});
   }
+
   _loadConfig() async {
-    
     loading = true;
-    setState(() {
-      
-    });
+    if (mounted) {
+      setState(() {});
+    }
     try {
       FukuroResponse res = await NodeConfig.loadMetricConfigurations(
           widget.node.getNodeId(), DISKConfiguration.label);
       if (mounted) {
         if (res.ok()) {
-          try{ 
-        //    print(config);
-           //   print(res.body());
+          try {
             config['extract']['value'] = res.body()['extract'];
             config['realtime']['value'] = res.body()['realtime'];
             config['tick']['value'] = res.body()['tick'];
             config['cooldown']['value'] = res.body()['cooldown'];
-            config['active'] = res.body()['active']??false;
+            config['active'] = res.body()['active'] ?? false;
             config['threshold']['value'] = res.body()['threshold'];
-            if(config['threshold']['value'] == false){
+            if (config['threshold']['value'] == false) {
               config['threshold']['value'] = 0;
             }
             config['extract']['refresh'] = true;
             config['realtime']['refresh'] = true;
-            config['tick']['refresh'] =true;
-            config['cooldown']['refresh'] = true; 
+            config['tick']['refresh'] = true;
+            config['cooldown']['refresh'] = true;
             config['threshold']['refresh'] = true;
-          }
-          catch(e){
+          } catch (e) {
             print('error $e');
           }
           loading = false;
@@ -192,7 +260,7 @@ class DISKConfigurationState extends State<DISKConfiguration> {
           _loadConfig();
           return;
         }
-      } 
+      }
     } catch (e) {}
   }
 }

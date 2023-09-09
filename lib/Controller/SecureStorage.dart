@@ -1,6 +1,9 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart'; 
+import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';  
+ const platform = const MethodChannel('com.example.flutter_secure_storage_example/storage');
 
-class SecureStorage {
+class SecureStorage { 
+
   static final FlutterSecureStorage storage =
       FlutterSecureStorage(aOptions: AndroidOptions(encryptedSharedPreferences: true));
   

@@ -105,7 +105,7 @@ class NETConfigurationState extends State<NETConfiguration> {
     config['active'] = {};
     config['threshold'] = {};
     _loadConfig();
-    form = NodeConfigForm(key: formStateKey, config:config,node: widget.node,metricLabel: 'net',thresholdUnit: 'MBps(received)',thresholdMax: 100,);
+    form = NodeConfigForm(key: formStateKey, config:config,node: widget.node,metricLabel: 'net',thresholdUnit: 'KBps(received)',thresholdMax: 100,);
   }
   _save() async {  
     print('save');

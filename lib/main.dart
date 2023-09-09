@@ -1,15 +1,20 @@
+ 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+ 
 import 'package:fukuro_mobile/Model/node.dart'; 
 import 'package:fukuro_mobile/View/app_setting.dart';
 import 'package:fukuro_mobile/View/home.dart';
 import 'package:fukuro_mobile/View/node_main.dart';
 import 'package:fukuro_mobile/View/node_register.dart';
-import 'package:fukuro_mobile/View/register.dart';  
+import 'package:fukuro_mobile/View/register.dart';   
 import 'View/login.dart';
 import 'package:sizer/sizer.dart'; 
 //import 'package:dcdg/dcdg.dart';
-
-void main() { 
+ 
+void main() async{ 
+   WidgetsFlutterBinding.ensureInitialized();
+    // Set up notification handlers  
   runApp(const MyApp());
 }
 
@@ -19,6 +24,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
+
     return Sizer(builder: (context, orientation, deviceType) {
       return  MaterialApp(
       title: 'FUKURO',

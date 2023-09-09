@@ -2,11 +2,11 @@
 
 import 'package:expansion_tile_group/expansion_tile_group.dart';
 import 'package:flutter/material.dart';
+import 'package:fukuro_mobile/Controller/utilities.dart';
 import 'package:fukuro_mobile/Model/node.dart';
-import 'package:fukuro_mobile/View/Component/node_form.dart';
+import 'package:fukuro_mobile/View/Component/Node/node_form.dart';
 import 'package:sizer/sizer.dart';
-
-import '../../../Controller/utilities.dart';
+ 
 
 class NodeDetails extends StatefulWidget {
   const NodeDetails({Key? key, required this.node}) : super(key: key);

@@ -8,19 +8,30 @@ import 'fukuro_request.dart';
 import 'package:http/http.dart' as http;
 
 class NodeController {
- 
-  static Future<List<DiskDrive>> getDiskList(int nodeId)async{
+  static Future<FukuroResponse> toggleDisk(
+      int nodeId, String diskname, bool enable) async {
+    FukuroRequest req = FukuroRequest('config/$nodeId/disk/$diskname');
+    http.Response httpr;
+    if (enable) {
+      httpr = await req.post();
+    } else {
+      httpr = await req.del();
+    }
+    FukuroResponse res = FukuroResponse(res: httpr);
+    return res;
+  }
+
+  static Future<List<DiskDrive>> getDiskList(int nodeId) async {
     FukuroRequest req = FukuroRequest('config/$nodeId/disk/list');
     http.Response httpr = await req.get();
     FukuroResponse res = FukuroResponse(res: httpr);
     List<DiskDrive> drives = [];
-    if(res.ok()){
-      for (var item in res.body()){
+    if (res.ok()) {
+      for (var item in res.body()) {
         drives.add(DiskDrive.fromJson(item));
       }
     }
     return drives;
-
   }
 
   static Future<List<Node>> fetchAllUserOwnedNodes() async {

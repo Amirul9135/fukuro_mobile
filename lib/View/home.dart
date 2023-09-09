@@ -1,14 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:fukuro_mobile/Model/node.dart';
-import 'package:fukuro_mobile/View/Component/Misc/disk_list.dart';
-import 'package:fukuro_mobile/View/Component/Node/realtime/node_realtime_screen.dart';
-import 'package:fukuro_mobile/View/Component/Node/report/cpu_report.dart';
-import 'package:fukuro_mobile/View/Component/Node/report/metric_chart.dart';
-import 'package:fukuro_mobile/View/Component/Node/report/metric_report_screen.dart';
-import 'package:fukuro_mobile/View/Component/node_form.dart';
-import 'package:fukuro_mobile/View/node_list.dart';
+import 'package:flutter/material.dart'; 
+import 'package:fukuro_mobile/View/Component/Node/node_list.dart';
 import 'package:fukuro_mobile/View/Component/Misc/expandable_fab.dart';
 import 'package:fukuro_mobile/Controller/Authentication.dart';
+import 'package:fukuro_mobile/View/Component/notification_screen.dart';
 
 class Home extends StatefulWidget {
   Home({Key? key, this.tabIndex = 0}) : super(key: key);
@@ -20,6 +14,7 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  bool isLoggingOut = false;
 
   @override
   void initState() {
@@ -34,6 +29,25 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoggingOut) {
+      return Container(
+        color: Colors.grey.shade600.withOpacity(.5),
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(
+                  height:
+                      16), // Adjust the space between the indicator and text
+             
+            ],
+          ),
+        ),
+      );
+    }
+
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -75,21 +89,21 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                 Text("staging debug"),
+                  Text("staging debug"),
                   NodeList(),
-                  Text("notification"),
+                  NotificationScreen(),
                 ],
               ),
             ),
           ],
         ),
-       /* floatingActionButton: (_tabController.index == 1)
+        floatingActionButton: (_tabController.index == 1)
             ? FloatingActionButton(
                 child: Icon(Icons.add_outlined),
                 onPressed: () {
                   // Action to perform when the button is pressed
-                      Navigator.pushNamedAndRemoveUntil(
-                          context, '/node/register', (route) => false);
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/node/register', (route) => false);
                 },
 
                 hoverColor: Colors.blue, // Optional: Change the hover color
@@ -101,7 +115,10 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 children: [
                   ActionButton(
                     onPressed: () async {
+                      isLoggingOut = true;
+                      setState(() {});
                       await Authentication.logOut();
+
                       Navigator.pushNamedAndRemoveUntil(
                           context, '/', (route) => false);
                     },
@@ -119,15 +136,14 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     icon: const Icon(Icons.person),
                   ),
                 ],
-              ),*/
+              ),
       ),
     );
   }
 
   _onTabChange() {
     print("change");
-    if(mounted)
-    setState(() {});
+    if (mounted) setState(() {});
   }
 }
 

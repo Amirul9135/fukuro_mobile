@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/utilities.dart';
-import 'package:fukuro_mobile/View/Component/node_form.dart';
+import 'package:fukuro_mobile/View/Component/Node/node_form.dart';
 import 'package:sizer/sizer.dart';
 
 class NodeRegister extends StatefulWidget {

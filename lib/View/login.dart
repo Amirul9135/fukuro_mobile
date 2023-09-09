@@ -120,9 +120,27 @@ class __FormContentState extends State<_FormContent> {
   bool _isPasswordVisible = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  bool loader = false;
   @override
   Widget build(BuildContext context) {
+       if (loader) {
+      return Container(
+        color: Colors.white,
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(
+                  height:
+                      16), // Adjust the space between the indicator and text
+             
+            ],
+          ),
+        ),
+      );
+    }
     return Container(
       constraints: const BoxConstraints(maxWidth: 300),
       child: Form(
@@ -200,32 +218,20 @@ class __FormContentState extends State<_FormContent> {
                 ),
                 onPressed: () async {
                   if (_formKey.currentState?.validate() ?? false) {
-                    /// do something 
-                    print(FukuroRequest.getApiUrl()+ 'user/login');
+                    loader = true;
+                    setState(() {
+                      
+                    });
+                    bool login = await Authentication.login(tecUsername.text,tecPassword.text); 
+                    if(mounted){
 
-                    http.Response response = await http.post(
-                      Uri.parse(FukuroRequest.getApiUrl()+ 'user/login'),
-                      headers: <String, String>{
-                        'Content-Type': 'application/json; charset=UTF-8',
-                      },
-                      body: jsonEncode(<String, String>{
-                        "username": tecUsername.text,
-                        "password": tecPassword.text
-                      }),
-                    );
-                    print(response.body);
-                    if (response.statusCode == 200) {
-                      if (mounted) {
-                        //store token
-                        print(response.body);
-                        Map<String, dynamic> data = jsonDecode(response.body);
-
-                        print(data);
-                        print(data["token"]);
-                        SecureStorage storage = SecureStorage();
-                        storage.write("jwt", data["token"]);
-                        storage.write("uid", data["uid"].toString());
-
+                    loader = false;
+                    setState(() {
+                      
+                    });
+                    }
+                    if (login) {
+                      if (mounted) { 
                         Navigator.pushNamed(context, '/home');
                       }
                     } else {

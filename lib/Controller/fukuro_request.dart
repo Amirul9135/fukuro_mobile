@@ -40,8 +40,13 @@ class FukuroRequest {
   }
 
   _loadToken() async {
+    try{
+      
     _headers["Authorization"] = await storage.read("jwt");
     _headers["uid"] = await storage.read("uid");
+    }catch(e){
+      print("req token load err $e");
+    }
     print("request made to" + _path);
   }
 
