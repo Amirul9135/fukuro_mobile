@@ -8,12 +8,16 @@ class FukuroRequest {
   final Map<dynamic, dynamic> _body = {};
   final Map<String, String> _headers = {};
 
-  //static String _fukuroUrl = "http://10.0.2.2:5000/api/";
+  //static String _fukuroUrl = "http://10.0.2.2:5000/api/"; //<< emulator
   //static String wsfukuroUrl = "ws://10.0.2.2:5000";
 
-  static String _fukuroUrl = "http://192.168.8.102:5000/api/";
-  static String wsfukuroUrl = "ws://192.168.8.102:5000";
-  static String getApiUrl() {
+ // static String _fukuroUrl = "http://192.168.8.102:5000/api/";// << local
+ // static String wsfukuroUrl = "ws://192.168.8.102:5000";
+
+ 
+  static String _fukuroUrl = "http://139.59.233.99:5001/api/";  //<< live on DGO
+  static String wsfukuroUrl = "ws://139.59.233.99:5001"; 
+  static String getApiUrl() { 
     
     return _fukuroUrl;
   }
@@ -47,7 +51,7 @@ class FukuroRequest {
     }catch(e){
       print("req token load err $e");
     }
-    print("request made to" + _path);
+    print("request made to ${FukuroRequest._fukuroUrl + _path}" );
   }
 
   post({int? timeout}) async {
@@ -66,6 +70,7 @@ class FukuroRequest {
           )
           .timeout(Duration(seconds: timeout ?? 30));
     } catch (e) {
+      print(e);
       return http.Response("unreached", 523);
     }
   }
@@ -147,6 +152,9 @@ class FukuroResponse{
   msg(){
     if(_body['message'] != null){
       return _body['message'].toString();
+    }
+    if(_body != null){
+      return _body.toString();
     }
     return '';
   }

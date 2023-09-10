@@ -162,12 +162,14 @@ class FukuroFormState extends State<FukuroForm> {
                     ? () => _selectTime(context, fieldConfig['controller'], dtFormat)
                     : null,
             validator: (value) {
+              
               if (fieldConfig['validator'] != null) {
-                if (value != null && RegExp(fieldConfig['validator']).hasMatch(value)) {
+                print("validating " + fieldConfig['validator']);
+                if (RegExp(fieldConfig['validator']).hasMatch(value??'')) {
                   return null;
                 }
               }
-              if ((fieldConfig['type']??0) == FukuroForm.inputNumerical) {
+              else if ((fieldConfig['type']??0) == FukuroForm.inputNumerical) {
                 int val = int.tryParse(value ?? '0') ?? 0;
                 if (fieldConfig['numMax'] != null && fieldConfig['numMin'] != null) {
                   if (val <= fieldConfig['numMax'] && val >= fieldConfig['numMin']) {
@@ -187,13 +189,17 @@ class FukuroFormState extends State<FukuroForm> {
               else {
                 int val = value?.length ?? 0;
                 if (fieldConfig['lengthMax'] != null || fieldConfig['lengthMin'] != null) {
-                  if (val <= fieldConfig['lengthMax'] && val >= fieldConfig['lengthMin']) {
-                    return null;
-                  } else if (fieldConfig['lengthMax'] != null && val <= fieldConfig['lengthMax']) {
-                    return null;
-                  } else if (fieldConfig['lengthMin'] != null && val >= fieldConfig['lengthMin']) {
-                    return null;
-                  }
+                  if(fieldConfig['lengthMax'] != null){
+                    if(val <= fieldConfig['lengthMax']){
+                      return null;
+                    }
+                  } 
+                  if(fieldConfig['lengthMin'] != null){
+                    if(val >= fieldConfig['lengthMin']){
+                      return null;
+                    }
+                  } 
+                  
                 } else {
                   return null;
                 }
@@ -358,6 +364,7 @@ class FukuroFormFieldBuilder {
   final bool? rightAllign;
   final bool? readOnly;
   final String? suffix;
+  final String? hint;
 
   FukuroFormFieldBuilder(
       {required this.fieldName,
@@ -379,7 +386,8 @@ class FukuroFormFieldBuilder {
       this.rightAllign,
       this.readOnly,
       this.help,
-      this.suffix});
+      this.suffix,
+      this.hint});
 
   Map<String, dynamic> build() {
     return {
@@ -400,7 +408,8 @@ class FukuroFormFieldBuilder {
       'rightAllign': rightAllign,
       'readOnly': readOnly,
       'help': help,
-      'suffix': suffix
+      'suffix': suffix,
+      'hint':hint
     };
   }
 }

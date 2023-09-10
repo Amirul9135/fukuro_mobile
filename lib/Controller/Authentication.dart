@@ -9,6 +9,14 @@ import 'fukuro_request.dart';
 import 'package:http/http.dart' as http;
 
 class Authentication {
+
+  static Future<FukuroResponse> register(dynamic userData)async{
+    FukuroRequest req = FukuroRequest('user');
+    req.addBody(userData);      
+    http.Response htres = await req.post();
+    return FukuroResponse(res: htres);
+  }
+
   static Future<bool> login(String username, String password) async {
     try {
       FukuroRequest req = FukuroRequest('user/login');

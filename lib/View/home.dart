@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
+import 'package:fukuro_mobile/Controller/Authentication.dart';
+import 'package:fukuro_mobile/View/Component/Misc/expandable_fab.dart'; 
 import 'package:fukuro_mobile/View/Component/Node/node_list.dart'; 
 import 'package:fukuro_mobile/View/Component/notification_screen.dart';
 
@@ -94,7 +96,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
             ),
           ],
         ),
-      /*  floatingActionButton: (_tabController.index == 1)
+        floatingActionButton: (_tabController.index == 1)
             ? FloatingActionButton(
                 child: Icon(Icons.add_outlined),
                 onPressed: () {
@@ -117,8 +119,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           setState(() {});
                           await Authentication.logOut();
 
-                          Navigator.pushNamedAndRemoveUntil(
-                              context, '/', (route) => false);
+                             Navigator.pushNamed(context, '/');
                         },
                         icon: const Icon(Icons.logout),
                       ),
@@ -135,7 +136,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       ),
                     ],
                   )
-                : null,*/
+                : null,
       ),
     );
   }
