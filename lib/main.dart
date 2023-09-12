@@ -1,5 +1,6 @@
  
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
+import 'package:fukuro_mobile/Controller/OneSignal.dart'; 
  
 import 'package:fukuro_mobile/Model/node.dart'; 
 import 'package:fukuro_mobile/View/app_setting.dart';
@@ -14,6 +15,7 @@ import 'package:sizer/sizer.dart';
 void main() async{ 
    WidgetsFlutterBinding.ensureInitialized();
     // Set up notification handlers  
+   await OneSignalController.init();
   runApp(const MyApp());
 }
 

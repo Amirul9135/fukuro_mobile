@@ -13,10 +13,11 @@ import 'package:http/http.dart' as http;
 class MetricController{
   // example start 2023-09-04 08:20:21
   static Future<FukuroResponse> getHistoricalReading(int nodeId, String metric, String dateStart,int inverval,String?dateEnd) async {
-
-    String url = "metric/$nodeId/$metric?start=$dateStart&interval=$inverval";
+    String dts =  DateTime.parse(dateStart).toUtc().toIso8601String();
+    String url = "metric/$nodeId/$metric?start=$dts&interval=$inverval";
     if(dateEnd != null && dateEnd.isNotEmpty){
-      url += "&end=$dateEnd";
+      String dte =  DateTime.parse(dateEnd).toUtc().toIso8601String();
+      url += "&end=$dte";
     }
     FukuroRequest req = FukuroRequest(url);
     http.Response htres = await req.get();
