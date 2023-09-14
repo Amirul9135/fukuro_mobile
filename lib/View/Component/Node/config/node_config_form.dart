@@ -1,9 +1,8 @@
-
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/fukuro_request.dart';
 import 'package:fukuro_mobile/Controller/node_config.dart';
-import 'package:fukuro_mobile/Controller/utilities.dart'; 
-import 'package:fukuro_mobile/Model/node.dart'; 
+import 'package:fukuro_mobile/Controller/utilities.dart';
+import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/Component/fukuro_form.dart';
 
@@ -18,11 +17,11 @@ class NodeConfigForm extends StatefulWidget {
       required this.node,
       this.thresholdMax})
       : super(key: key);
-  Node node;
-  String metricLabel;
-  String thresholdUnit;
-  dynamic thresholdMax;
-  Map<String, dynamic> config;
+  final Node node;
+  final String metricLabel;
+  final String thresholdUnit;
+  final dynamic thresholdMax;
+  final Map<String, dynamic> config;
 }
 
 class NodeConfigFormState extends State<NodeConfigForm> {
@@ -35,57 +34,61 @@ class NodeConfigFormState extends State<NodeConfigForm> {
   void initState() {
     // Initialize your state here
     super.initState();
-    intervalFields['extract'] = widget.config['extract']; 
+    intervalFields['extract'] = widget.config['extract'];
     intervalFields['extract']?.addAll(FukuroFormFieldBuilder(
             fieldName: 'Extraction',
             prefix: 'Extraction',
             rightAllign: true,
             type: FukuroForm.inputNumerical,
-            value:  widget.config['extract']['value'].toString(),
+            value: widget.config['extract']['value'].toString(),
+            readOnly: (widget.node.access != 1),
             isTimeUnit: true)
-        .build());  
-    intervalFields['realtime'] =widget.config['realtime'];
-    intervalFields['realtime']?.addAll( FukuroFormFieldBuilder(
+        .build());
+    intervalFields['realtime'] = widget.config['realtime'];
+    intervalFields['realtime']?.addAll(FukuroFormFieldBuilder(
             fieldName: 'Realtime',
             prefix: 'Realtime',
             rightAllign: true,
-             value:  widget.config['realtime']['value'].toString(),
+            value: widget.config['realtime']['value'].toString(),
+            readOnly: (widget.node.access != 1),
             type: FukuroForm.inputNumerical,
             isTimeUnit: true)
         .build());
- 
-    alertFields['tick']  = widget.config['tick'];
-    alertFields['tick'] ?.addAll( FukuroFormFieldBuilder(
+
+    alertFields['tick'] = widget.config['tick'];
+    alertFields['tick']?.addAll(FukuroFormFieldBuilder(
             fieldName: 'Ticks',
             prefix: 'Ticks',
             rightAllign: true,
-            value:  widget.config['tick']['value'].toString(),
+            value: widget.config['tick']['value'].toString(),
+            readOnly: (widget.node.access != 1),
             type: FukuroForm.inputNumerical)
         .build());
-    alertFields['cooldown']  = widget.config['cooldown'];
-    alertFields['cooldown']?.addAll( FukuroFormFieldBuilder(
+    alertFields['cooldown'] = widget.config['cooldown'];
+    alertFields['cooldown']?.addAll(FukuroFormFieldBuilder(
             fieldName: 'Cooldown',
             prefix: 'Cooldown',
             rightAllign: true,
-             value:  widget.config['cooldown']['value'].toString(),
+            value: widget.config['cooldown']['value'].toString(),
+            readOnly: (widget.node.access != 1),
             type: FukuroForm.inputNumerical,
             isTimeUnit: true)
-        .build()); 
+        .build());
     thresholdField['threshold'] = widget.config['threshold'];
-    thresholdField['threshold']?.addAll( FukuroFormFieldBuilder(
+    thresholdField['threshold']?.addAll(FukuroFormFieldBuilder(
             fieldName: 'Threshold',
             prefix: 'Threshold',
             rightAllign: true,
             type: FukuroForm.inputNumerical,
-             value:  widget.config['threshold']['value'].toString(),
+            value: widget.config['threshold']['value'].toString(),
             suffix: widget.thresholdUnit,
-            numMax: myPareseNum(widget.thresholdMax) ,
+            numMax: myPareseNum(widget.thresholdMax),
             help:
                 'This is your own threshold value which will trigger push up notification')
         .build());
     print('aftr');
     print(widget.config);
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       setState(() {});
     });
@@ -93,7 +96,7 @@ class NodeConfigFormState extends State<NodeConfigForm> {
 
   @override
   Widget build(BuildContext context) {
-    // Build the widget's UI here 
+    // Build the widget's UI here
     return Center(
         child: Column(
       children: [
@@ -112,18 +115,20 @@ class NodeConfigFormState extends State<NodeConfigForm> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    (widget.node.access == 1) ?
                     Switch(
                         value: widget.config['active'] == true,
                         onChanged: (value) {
                           _toggleMEtric();
-                        }),
-                    const Text("Enable")
+                        }):Container(),
+                    (widget.node.access == 1) ?
+                    const Text("Enable"):Container()
                   ],
                 ),
               ],
             )),
         const Divider(),
-        FukuroForm(fields: intervalFields), 
+        FukuroForm(fields: intervalFields),
         FukuroForm(fields: alertFields),
         const Divider(),
         Container(
@@ -141,51 +146,52 @@ class NodeConfigFormState extends State<NodeConfigForm> {
                       ),
                     ),
                     Switch(
-                        value:( myPareseNum( widget.config['threshold']['value']) != 0),
+                        value:
+                            (myPareseNum(widget.config['threshold']['value']) !=
+                                0),
                         onChanged: (value) {
-                  _toggleNotification();
+                          _toggleNotification();
                         }),
                     const Text("Enable")
                   ],
                 ),
               ],
-            )), 
-        ( myPareseNum( widget.config['threshold']['value']) != 0)
+            )),
+        (myPareseNum(widget.config['threshold']['value']) != 0)
             ? FukuroForm(fields: thresholdField)
-            : Text(''), 
+            : Text(''),
       ],
     ));
   }
 
   save() {
-    try{
+    try {
       print('inner save ');
 
-    widget.config['extract']['value'] =
-        intervalFields['extract']?['controller'].getValInSecond();
-    widget.config['realtime']['value'] =
-        intervalFields['realtime']?['controller'].getValInSecond();
-    widget.config['tick']['value'] = alertFields['tick']?['controller'].getValueInt();
-    widget.config['cooldown']['value'] =
-        alertFields['cooldown']?['controller'].getValInSecond(); 
-    widget.config['cooldown']['value'] =
-        alertFields['cooldown']?['controller'].getValInSecond(); 
-    widget.config['threshold']['value'] =
-        thresholdField['threshold']?['controller']?.getValueDouble()??0;  
-    }
-    catch(e){
+      widget.config['extract']['value'] =
+          intervalFields['extract']?['controller'].getValInSecond();
+      widget.config['realtime']['value'] =
+          intervalFields['realtime']?['controller'].getValInSecond();
+      widget.config['tick']['value'] =
+          alertFields['tick']?['controller'].getValueInt();
+      widget.config['cooldown']['value'] =
+          alertFields['cooldown']?['controller'].getValInSecond();
+      widget.config['cooldown']['value'] =
+          alertFields['cooldown']?['controller'].getValInSecond();
+      widget.config['threshold']['value'] =
+          thresholdField['threshold']?['controller']?.getValueDouble() ?? 0;
+    } catch (e) {
       print('inner save er $e');
     }
   }
 
   _toggleMEtric() {
     FukuroDialog msg;
-    if ( widget.config['active'] == true) {
+    if (widget.config['active'] == true) {
       //enable
       msg = FukuroDialog(
         title: "Enable Monitoring for this Metric",
-        message:
-            "Agent will extract the reading at determined interval",
+        message: "Agent will extract the reading at determined interval",
         mode: FukuroDialog.INFO,
         NoBtn: true,
         BtnText: "Yes",
@@ -202,33 +208,31 @@ class NodeConfigFormState extends State<NodeConfigForm> {
     }
     showDialog(context: context, builder: (_) => msg).then((value) async {
       if (msg.okpressed) {
-        if( widget.config['active'] == true ){// act to disable
-          FukuroResponse res = await NodeConfig.enableMonitoring(widget.node.getNodeId(), widget.metricLabel);
-          if(mounted){
-
-          if(res.status() == 200){
-            FukuroDialog.success(context, '', '');
-            widget.config['active'] = !(widget.config['active'] ?? false);
+        if (widget.config['active'] == true) {
+          // act to disable
+          FukuroResponse res = await NodeConfig.enableMonitoring(
+              widget.node.getNodeId(), widget.metricLabel);
+          if (mounted) {
+            if (res.status() == 200) {
+              FukuroDialog.success(context, '', '');
+              widget.config['active'] = !(widget.config['active'] ?? false);
+            } else {
+              FukuroDialog.error(context, 'Failed', res.body()['message']);
+            }
           }
-          else{
-            FukuroDialog.error(context, 'Failed', res.body()['message']);
-          }
-          }
-        }
-        else{
-          FukuroResponse res = await NodeConfig.disableMonitoring(widget.node.getNodeId(), widget.metricLabel);
-          if(mounted){
-
-          if(res.status() == 200){
-            FukuroDialog.success(context, '', '');
-            widget.config['active'] = !(widget.config['active'] ?? false);
-          }
-          else{
-            FukuroDialog.error(context, 'Failed', res.body()['message']);
-          }
+        } else {
+          FukuroResponse res = await NodeConfig.disableMonitoring(
+              widget.node.getNodeId(), widget.metricLabel);
+          if (mounted) {
+            if (res.status() == 200) {
+              FukuroDialog.success(context, '', '');
+              widget.config['active'] = !(widget.config['active'] ?? false);
+            } else {
+              FukuroDialog.error(context, 'Failed', res.body()['message']);
+            }
           }
         }
-       // widget.config['active'] = !(widget.config['active'] ?? false);
+        // widget.config['active'] = !(widget.config['active'] ?? false);
         setState(() {});
       }
     });
@@ -236,7 +240,7 @@ class NodeConfigFormState extends State<NodeConfigForm> {
 
   _toggleNotification() {
     FukuroDialog msg;
-    if (( myPareseNum( widget.config['threshold']['value']) == 0)) {
+    if ((myPareseNum(widget.config['threshold']['value']) == 0)) {
       // disable to enable
       msg = FukuroDialog(
         title: "Enable Notification",
@@ -260,7 +264,7 @@ class NodeConfigFormState extends State<NodeConfigForm> {
 
     showDialog(context: context, builder: (_) => msg).then((value) async {
       if (msg.okpressed) {
-        if (( myPareseNum( widget.config['threshold']['value']) == 0)) {
+        if ((myPareseNum(widget.config['threshold']['value']) == 0)) {
           double val = double.tryParse(msg.getInputText()) ?? 0;
           FukuroResponse res = await NodeConfig.enableNotification(
               widget.node.getNodeId(), widget.metricLabel, val);

@@ -10,11 +10,13 @@ class UserForm extends StatefulWidget {
   final String fabText;
   final Icon fabIcon;
   final bool register;
+  final bool? onlyChangeable;
   const UserForm({
     Key? key,
     required this.fabIcon,
     required this.fabText,
     required this.register,
+    this.onlyChangeable
     
   }) : super(key: key);
 
@@ -49,6 +51,7 @@ class UserFormState extends State<UserForm> {
             type: FukuroForm.inputText,
             lengthMin: 6,
             hint: 'Enter your username',
+            readOnly: (widget.onlyChangeable == true),
             icon: Icon(Icons.account_circle_outlined),
             help: "Used as your log in credential")
         .build();
@@ -77,6 +80,7 @@ class UserFormState extends State<UserForm> {
           child: SingleChildScrollView(
               child: Column(children: [
             FukuroForm(key: _formKey, fields: fields),
+            (widget.onlyChangeable == true) ? Container() :
             Form(key: _passFormKey, child: Column(children: [
                Container(
               padding: const EdgeInsets.fromLTRB(1, 10, 1, 10),
@@ -145,7 +149,8 @@ class UserFormState extends State<UserForm> {
               ),
             ),
          
-            ],)) ]))),
+            ],)) 
+             ]))),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           // Action to perform when the button is pressed

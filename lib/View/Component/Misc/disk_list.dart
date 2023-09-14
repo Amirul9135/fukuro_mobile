@@ -53,7 +53,10 @@ class DiskList extends StatelessWidget {
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
                         onTap: () {
-                          fnSelect?.call(snapshot.data![index]);
+                          if(node.access == 1){
+
+                            fnSelect?.call(snapshot.data![index]);
+                          }
                         },
                         child: Container(
                           padding: const EdgeInsets.all(20),

@@ -3,12 +3,16 @@ class User {
   String _email = "";
   String _phone = "";
   int _userId = 0;
+  int accessId = 0;
 
   User.fromJson(Map<String, dynamic> json) {
     _name = json["name"];
     _email = json["email"];
     _phone = json["phone"];
     _userId = json["userId"];
+    if(json['accessId'] != null){
+      accessId = json['accessId'];
+    }
   }
   User();
 

@@ -75,6 +75,7 @@ class NodeDetailsState extends State<NodeDetails> {
               ),
               verticalGap(1.h),
               form,
+              (widget.node.access == 1 )?
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -92,7 +93,8 @@ class NodeDetailsState extends State<NodeDetails> {
                   ),
                   onPressed: () {},
                 ),
-              ),
+              ):Container(),
+              (widget.node.access == 1 )?
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -117,7 +119,7 @@ class NodeDetailsState extends State<NodeDetails> {
                     }
                   },
                 ),
-              ),
+              ):Container(),
             ],
           ),
           verticalGap(20),

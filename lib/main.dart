@@ -6,6 +6,7 @@ import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/home.dart';
 import 'package:fukuro_mobile/View/node_main.dart';
 import 'package:fukuro_mobile/View/node_register.dart';
+import 'package:fukuro_mobile/View/profile.dart';
 import 'package:fukuro_mobile/View/register.dart';   
 import 'View/login.dart';
 import 'package:sizer/sizer.dart'; 
@@ -54,6 +55,7 @@ class MyApp extends StatelessWidget {
         },
       routes: {
         '/': (context) => const Login(),
+        '/profile': (context) => const Profile(),
         '/register': (context) => const Register(), 
         '/node/register': (context) => const NodeRegister()
       },

@@ -8,6 +8,7 @@ class Node {
   String _name = "";
   String _description = ""; 
   String _passKey = "";
+  int access = 0;
 
   Node();
   Node.fromJson(Map<String, dynamic> json) {

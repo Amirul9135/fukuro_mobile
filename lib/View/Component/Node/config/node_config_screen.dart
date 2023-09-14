@@ -44,20 +44,22 @@ class NodeConfigScreenState extends State<NodeConfigScreen>
             automaticallyImplyLeading: false,
             title: Container(child: Row(children: [ 
               const Text('Monitoring Configuration',style: TextStyle(color: Colors.blue),),
-              Switch(value: mainconfig['active']??true, onChanged: (value) {
+
+              (widget.node.access == 1) ? Switch(value: mainconfig['active']??true, onChanged: (value) {
                           _togglePush();
-                        }),
-              Spacer(),
+                        }):Container(),
+              const Spacer(),
               Expanded(child: 
               TextFormField(
                 
                 controller: txtPushInterval,
                 keyboardType: TextInputType.number,  
-                decoration:  InputDecoration(
+                readOnly: (widget.node.access != 1),
+                decoration: InputDecoration(
                   prefix: const Text('Push Interval(sec):   ',style: TextStyle(color: Colors.blue)),
-                  suffix: IconButton(icon: const Icon(Icons.check,color: Colors.blue,),onPressed:  (){
+                  suffix:(widget.node.access == 1) ?  IconButton(icon: const Icon(Icons.check,color: Colors.blue,),onPressed:  (){
                     _savePush();
-                  },), 
+                  },):null, 
                 ),
               ),), 
           ]),)

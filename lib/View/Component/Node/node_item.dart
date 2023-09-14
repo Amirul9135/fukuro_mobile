@@ -23,7 +23,9 @@ class NodeItem extends StatelessWidget {
             .then((value) async {
           if (wsConf.okpressed) {
             node.setPassKey(wsConf.getInputText());
-            if (await NodeController.checkAccessToNode(node)) { 
+            int access = await NodeController.checkAccessToNode(node);
+            if (access != 0) { 
+              node.access = access;
               Navigator.pushNamed(context, '/node', arguments: node);
             } else {
               showDialog(

@@ -31,7 +31,7 @@ class NodeRegisterState extends State<NodeRegister> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pushNamed(context, '/home', arguments: 1);
+              Navigator.pushNamed(context, '/home', arguments: 0);
             },
           ),
         ),

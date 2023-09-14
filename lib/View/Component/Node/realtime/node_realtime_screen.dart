@@ -276,7 +276,21 @@ class NodeRealtimeScreenState extends State<NodeRealtimeScreen>
           ),
         ],
       ),
-      floatingActionButton: isTerminalVisible
+      floatingActionButton: 
+      (widget.node.access == 3) ? 
+      FloatingActionButton(
+                onPressed: () {
+                  
+                    _selectMetric();
+                },
+
+                hoverColor: Colors.blue, // Optional: Change the hover color
+                hoverElevation: 10, // Optional: Adjust the elevation on hover
+                child: const Icon(Icons.display_settings_rounded),
+              )
+              :
+      
+      isTerminalVisible
           ? Container()
           : ExpandableFab(
               icon: const Icon(Icons.ads_click),
@@ -455,7 +469,7 @@ class NodeRealtimeScreenState extends State<NodeRealtimeScreen>
     print("adding $data");
     String newcmd = "";
     if (data["dir"] != null) {
-      newcmd += "[" + data["dir"].toString() + "] ";
+      newcmd += "current directory: " + data["dir"].toString() + "\n";
     }
     newcmd += data["data"].toString();
     commands.add(Command(text: newcmd, input: false));

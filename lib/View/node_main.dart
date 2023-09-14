@@ -27,8 +27,7 @@ class NodeMainScreenState extends State<NodeMainScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    print(widget.thisNode.getNodeId());
+  Widget build(BuildContext context) { 
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.thisNode.getName()),
@@ -120,19 +119,20 @@ class NodeMainScreenState extends State<NodeMainScreen> {
                 onTap: () => _selectMenuItem('Node_Config'),
                 selected: _selectedMenuItem == 'Node_Config',
               ),
+              (widget.thisNode.access == 1) ?
               ListTile(
                 leading: const Icon(Icons.supervised_user_circle_outlined),
                 title: const Text('Collaboration'),
                 onTap: () => _selectMenuItem('Collaboration'),
                 selected: _selectedMenuItem == 'Collaboration',
-              ),
+              ):Container(),
               const Spacer(),
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.exit_to_app),
                 title: const Text('Back to Home'),
                 onTap: () =>
-                    {Navigator.pushNamed(context, '/home', arguments: 1)},
+                    {Navigator.pushNamed(context, '/home', arguments: 0)},
               ),
             ],
           ),

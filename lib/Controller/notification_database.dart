@@ -27,7 +27,7 @@ class NotificationDatabase {
       throw Exception("Database not initialized. Call initialize() first.");
     }
 
-    return await _database!.query(tableName);
+    return await _database!.query(tableName,orderBy: 'id DESC');
   }
 
   Future<void> deleteData(String tableName, int id) async {

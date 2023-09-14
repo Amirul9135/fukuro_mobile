@@ -1,9 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/fukuro_request.dart';
 import 'package:fukuro_mobile/Controller/node_controller.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/Model/user.dart';
-import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart'; 
+import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 
 class CollaborationScreen extends StatefulWidget {
   final Node node;
@@ -53,16 +54,16 @@ class CollaborationScreenState extends State<CollaborationScreen>
               controller: _tabController,
               children: [
                 UserList(
-                  fnTap: _removeUser,
+                  fnTap: _changeUserRole,
                   node: widget.node,
                   access: true,
                   title: "Collaborators",
                 ),
                 UserList(
-                  fnTap: _addUser,
+                  fnTap: _changeUserRole,
                   node: widget.node,
                   access: false,
-                  title: "Collaborators",
+                  title: "Find Users",
                 )
               ],
             ),
@@ -72,68 +73,158 @@ class CollaborationScreenState extends State<CollaborationScreen>
     );
   }
 
-  Future<bool> _addUser(User user) async {
+  //return true to signal refresh
+  Future<bool> _changeUserRole(User user) async {
     print("add user $user");
-    FukuroDialog msg = FukuroDialog(
-      title: "Add User",
-      message:
-          "Selected user ${user.name} will have access this node ${widget.node.getName()}",
-      mode: FukuroDialog.WARNING,
-      NoBtn: true,
-      BtnText: "Yes",
-    );
-
-    await showDialog(context: context, builder: (_) => msg);
-    if (msg.okpressed) {
-      FukuroResponse res = await NodeController.toggleAccess(
-          widget.node.getNodeId(), user.userId, true);
-      if (res.ok()) {
-        if(mounted){ 
-          await FukuroDialog.success(context, "aded", "");
+    int role = await _selectRole(user);
+    if (role == -1) {
+      return false;
+    }
+    if (role != user.accessId) {
+      print('chg00');
+      bool conf = await _confirmChange(user, role);
+      if (conf) {
+        FukuroResponse res = await NodeController.changeUserAccess(
+            widget.node.getNodeId(), user.userId, role);
+        if (mounted) {
+          if (res.ok()) {
+            FukuroDialog.success(context, "Access Changes Applied", '');
+          } else {
+            FukuroDialog.error(
+                context, "Failed to Change Access", res.msg().toString());
+          }
         }
         return true;
       }
-      else{
-        if(mounted){ 
-           await FukuroDialog.error(context, "Failed to add user", res.msg());
-        }
-        
-      }
-     
     }
     return false;
   }
 
-  Future<bool> _removeUser(User user) async {
-    print("remove user $user");
+  Future<bool> _confirmChange(User user, int role) async {
+    String strMsg = "";
+    if (role == 0) {
+      strMsg =
+          "Remove user access?\n${user.name} will no longer be able to access this node";
+    } else if (role == 1) {
+      strMsg =
+          "Grant Admin access to ${user.name}?\nThis user will have access to all features for this node";
+    } else if (role == 2) {
+      strMsg =
+          "Grant Collaborator access to ${user.name}?\nThis user will have access to all features for this node except configurations and logs";
+    } else if (role == 3) {
+      strMsg =
+          "Grant Guest access to ${user.name}?\nThis user will only be able to monitor and receive notification concerning this node";
+    }
     FukuroDialog msg = FukuroDialog(
-      title: "Remove User",
-      message:
-          "Selected user ${user.name} will no longer be able to access this node ${widget.node.getName()}",
-      mode: FukuroDialog.WARNING,
+      title: "Confirm Action",
+      mode: FukuroDialog.QUESTION,
+      message: strMsg,
       NoBtn: true,
-      BtnText: "Yes",
+      BtnText: "Proceed",
     );
-
+    bool conf = false;
     await showDialog(context: context, builder: (_) => msg);
     if (msg.okpressed) {
-      FukuroResponse res = await NodeController.toggleAccess(
-          widget.node.getNodeId(), user.userId, false);
-      if (res.ok()) {
-        if(mounted){ 
-          await FukuroDialog.success(context, "Removed", "");
-        }
-        return true;
-      }
-      else{
-        if(mounted){ 
-           await FukuroDialog.error(context, "Failed to Remove user", res.msg());
-        }
-        
-      }
-     
+      conf = true;
     }
+    return conf;
+  }
+
+  //return true to signal refresh
+  Future<bool> _removeUser(User user) async {
+    print("remove user $user");
     return false;
+  }
+
+  _applyRoleChanges(User user) {}
+  Future<int> _selectRole(User user) async {
+    int role = 0;
+    await showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: const Text('Select Role'),
+          content: Text('Select the role to be assigned to ${user.name}'),
+          actions: <Widget>[
+            (user.accessId != 1)
+                ? Container(
+                    margin: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.blue.shade900),
+                    child: CupertinoDialogAction(
+                      textStyle: const TextStyle(color: Colors.white),
+                      child: const Text('Admin'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        role = 1;
+                      },
+                    ),
+                  )
+                : Container(),
+            (user.accessId != 2)
+                ? Container(
+                    margin: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.blue),
+                    child: CupertinoDialogAction(
+                      textStyle: const TextStyle(color: Colors.white),
+                      child: const Text('Collaborator'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        role = 2;
+                      },
+                    ),
+                  )
+                : Container(),
+            (user.accessId != 3)
+                ? Container(
+                    margin: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.lightBlueAccent),
+                    child: CupertinoDialogAction(
+                      textStyle: const TextStyle(color: Colors.white),
+                      child: const Text('Guest'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        role = 3;
+                      },
+                    ),
+                  )
+                : Container(),
+            (user.accessId != 0)
+                ? Container(
+                    margin: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.redAccent),
+                    child: CupertinoDialogAction(
+                      textStyle: const TextStyle(color: Colors.white),
+                      child: const Text('Remove'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        role = 0;
+                      },
+                    ),
+                  )
+                : Container(),
+            CupertinoDialogAction(
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.deepOrange),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                role = -1;
+              },
+            ),
+          ],
+        );
+      },
+    );
+    return role;
   }
 }
 
@@ -204,10 +295,9 @@ class UserListState extends State<UserList> {
                 print("mapping");
                 return GestureDetector(
                   onTap: () async {
-                     if(await widget.fnTap?.call(e) == true){
-                      
-                    _loadUser();
-                     }
+                    if (await widget.fnTap?.call(e) == true) {
+                      _loadUser();
+                    }
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -253,15 +343,35 @@ class UserListState extends State<UserList> {
                                 width: double.infinity,
                                 child: Column(
                                   children: [
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        e.name,
-                                        textAlign: TextAlign.start,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15),
-                                      ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          e.name,
+                                          textAlign: TextAlign.start,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16),
+                                        ),
+                                        const Spacer(),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: (e.accessId == 1) ? Colors.blue.shade900 :
+                                                    (e.accessId == 2) ?  Colors.blue :
+                                                    (e.accessId == 3) ?  Colors.lightBlueAccent :
+                                                    Colors.white
+                                            ,
+                                            borderRadius: BorderRadius.circular(50)
+                                          ),
+                                          padding: const EdgeInsets.all(5),
+                                          child:Text(
+                                          (e.accessId == 1) ? "Admin" :
+                                          (e.accessId == 2) ? "Collaborator" :
+                                          (e.accessId == 3) ? "Guest" : "" ,
+                                          style: const TextStyle(color: Colors.white),
+                                        ) ,
+                                        )
+                                        
+                                      ],
                                     ),
                                     Row(
                                       children: [

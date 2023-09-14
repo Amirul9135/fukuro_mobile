@@ -11,7 +11,7 @@ class NodeForm extends StatefulWidget {
   NodeFormState createState() => NodeFormState();
   NodeForm({Key? key, this.origin, this.readonly, this.nokey, this.showId})
       : super(key: key);
-  Node? origin;
+   Node? origin;
   bool? readonly;
   bool? nokey;
   bool? showId;

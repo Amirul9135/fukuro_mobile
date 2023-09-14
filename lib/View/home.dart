@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/Authentication.dart';
-import 'package:fukuro_mobile/View/Component/Misc/expandable_fab.dart'; 
-import 'package:fukuro_mobile/View/Component/Node/node_list.dart'; 
+import 'package:fukuro_mobile/View/Component/Misc/expandable_fab.dart';
+import 'package:fukuro_mobile/View/Component/Node/node_list.dart';
 import 'package:fukuro_mobile/View/Component/notification_screen.dart';
+import 'package:fukuro_mobile/View/profile.dart';
 
 class Home extends StatefulWidget {
   Home({Key? key, this.tabIndex = 0}) : super(key: key);
@@ -18,7 +19,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_onTabChange);
     int initIndex = (_tabController.length - 1 < widget.tabIndex)
         ? _tabController.length - 1
@@ -48,7 +49,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
     }
 
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         body: CustomScrollView(
           slivers: [
@@ -88,7 +89,6 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                 Text("test page"),
                   NodeList(),
                   NotificationScreen(),
                 ],
@@ -96,45 +96,40 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
             ),
           ],
         ),
-        floatingActionButton: (_tabController.index == 1)
-            ? FloatingActionButton(
-                child: Icon(Icons.add_outlined),
-                onPressed: () {
-                  // Action to perform when the button is pressed
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, '/node/register', (route) => false);
-                },
+        floatingActionButton: (_tabController.index == 0)
+            ? ExpandableFab(
+                icon: const Icon(Icons.settings),
+                distance: 100,
+                children: [
+                  ActionButton(
+                    onPressed: () async {
+                      isLoggingOut = true;
+                      setState(() {});
+                      await Authentication.logOut();
 
-                hoverColor: Colors.blue, // Optional: Change the hover color
-                hoverElevation: 10, // Optional: Adjust the elevation on hover
+                      Navigator.pushNamed(context, '/');
+                    },
+                    icon: const Icon(Icons.logout),
+                  ),
+                  ActionButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Profile()),
+                      );
+                    },
+                    icon: const Icon(Icons.person),
+                  ),
+                  ActionButton(
+                    onPressed: () {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, '/node/register', (route) => false);
+                    },
+                    icon: const Icon(Icons.add_outlined),
+                  ),
+                ],
               )
-            : (_tabController.index == 0)
-                ? ExpandableFab(
-                    icon: const Icon(Icons.settings),
-                    distance: 100,
-                    children: [
-                      ActionButton(
-                        onPressed: () async {
-                          isLoggingOut = true;
-                          setState(() {});
-                          await Authentication.logOut();
-
-                             Navigator.pushNamed(context, '/');
-                        },
-                        icon: const Icon(Icons.logout),
-                      ),
-                      ActionButton(
-                        onPressed: () { 
-                        },
-                        icon: const Icon(Icons.settings),
-                      ),
-                      ActionButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.person),
-                      ),
-                    ],
-                  )
-                : null,
+            : null,
       ),
     );
   }
@@ -146,7 +141,6 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
 }
 
 const _tabs = [
-  Tab(icon: Icon(Icons.dashboard_rounded), text: "Dashboard"),
   Tab(icon: Icon(Icons.monitor_heart_rounded), text: "Nodes"),
   Tab(icon: Icon(Icons.circle_notifications), text: "Notifications"),
 ];

@@ -10,6 +10,26 @@ import 'package:http/http.dart' as http;
 class NodeController {
 
   
+  static Future<FukuroResponse> changeUserAccess(int nodeId,int userId,int targetRole) async{
+    String url = "node/$nodeId/access/";
+    if(targetRole == 0) {url += "$userId";}
+    if(targetRole == 1) {url += "admin/$userId";}
+    if(targetRole == 2) {url += "collaborator/$userId";}
+    if(targetRole == 3) {url += "guest/$userId";}
+     
+    FukuroRequest req = FukuroRequest(url);
+     http.Response httpr;
+    if(targetRole == 0){
+      httpr = await req.del();
+    }
+    else{
+      httpr = await req.post();
+    } 
+
+    return  FukuroResponse(res: httpr) ;
+
+  }
+
   static Future<FukuroResponse> getLogs(int nodeId,String start,String end) async{
     
     String dts =  DateTime.parse(start).toUtc().toIso8601String();
@@ -24,19 +44,6 @@ class NodeController {
     http.Response httpr= await req.get();
     return  FukuroResponse(res: httpr) ;
 
-  }
-
-  //recheck here
-  static Future<FukuroResponse> toggleAccess(int nodeId,int userId,bool access) async{
-    FukuroRequest req = FukuroRequest('node/$nodeId/grant/$userId');
-    http.Response httpr;
-    if(access){
-      httpr = await req.post();
-    }
-    else{
-      httpr = await req.del();
-    }
-    return FukuroResponse(res: httpr);
   }
 
   static Future<FukuroResponse> findUser(int nodeId,bool access,String key) async{
@@ -122,13 +129,14 @@ class NodeController {
     return cpudata;
   }
 
-  static Future<bool> checkAccessToNode(Node node) async {
+  static Future<int> checkAccessToNode(Node node) async {
     FukuroRequest req = FukuroRequest("node/access");
     req.setBody(node.toJson());
     http.Response res = await req.post();
-    if (res.statusCode == 200) {
-      return true;
+    FukuroResponse rs = FukuroResponse(res: res); 
+    if (rs.ok()) {
+      return rs.body()['accessId'];
     }
-    return false;
+    return 0;
   }
 }
