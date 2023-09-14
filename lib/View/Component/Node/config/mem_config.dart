@@ -188,8 +188,7 @@ class MEMConfigurationState extends State<MEMConfiguration> {
           loading = false;
           setState(() {});
         } else {
-          FukuroDialog.error(context, 'Failed', 'Unable to load memory config');
-          _loadConfig();
+          FukuroDialog.error(context, 'Failed', 'Unable to load memory config'); 
           return;
         }
       } 

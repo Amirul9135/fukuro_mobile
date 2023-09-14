@@ -188,8 +188,7 @@ class NETConfigurationState extends State<NETConfiguration> {
           loading = false;
           setState(() {});
         } else {
-          FukuroDialog.error(context, 'Failed', 'Unable to load network config');
-          _loadConfig();
+          FukuroDialog.error(context, 'Failed', 'Unable to load network config'); 
           return;
         }
       } 

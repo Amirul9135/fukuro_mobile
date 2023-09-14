@@ -4,6 +4,7 @@ import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Node/collaboration_screen.dart';
 import 'package:fukuro_mobile/View/Component/Node/config/node_config_screen.dart';
 import 'package:fukuro_mobile/View/Component/Node/node_details.dart';
+import 'package:fukuro_mobile/View/Component/Node/node_log.dart';
 import 'package:fukuro_mobile/View/Component/Node/realtime/node_realtime_screen.dart';
 import 'package:fukuro_mobile/View/Component/Node/report/metric_report_screen.dart';
 
@@ -68,6 +69,12 @@ class NodeMainScreenState extends State<NodeMainScreen> {
                 onTap: () => _selectMenuItem('Node'),
                 selected: _selectedMenuItem == 'Node',
               ),
+              ListTile(
+                leading: const Icon(Icons.history_edu_outlined),
+                title: const Text('Activity Log'),
+                onTap: () => _selectMenuItem('Log'),
+                selected: _selectedMenuItem == 'Log',
+              ),
               const Divider(),
               Container(
                 padding:
@@ -109,7 +116,7 @@ class NodeMainScreenState extends State<NodeMainScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.display_settings_outlined),
-                title: const Text('Configuration'),
+                title: const Text('Monitoring'),
                 onTap: () => _selectMenuItem('Node_Config'),
                 selected: _selectedMenuItem == 'Node_Config',
               ),
@@ -142,6 +149,7 @@ class NodeMainScreenState extends State<NodeMainScreen> {
                         ? MetricReportScreen(node: widget.thisNode)
                         : _selectedMenuItem == 'realtime'
                             ? NodeRealtimeScreen(node: widget.thisNode)
-                            : _selectedMenuItem =="Collaboration"? CollaborationScreen(node: widget.thisNode):  Text("placeholder"));
+                            : _selectedMenuItem =="Collaboration"? CollaborationScreen(node: widget.thisNode)
+                            : _selectedMenuItem == "Log" ? NodeLog(node:widget.thisNode):  Text("placeholder"));
   }
 }

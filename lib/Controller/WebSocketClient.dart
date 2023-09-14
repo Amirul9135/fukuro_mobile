@@ -65,8 +65,10 @@ class WebSocketClient {
       return;
     }
 
-    try{
+    try{ 
     if (data.containsKey("path")) {
+      print(data["path"]);
+      print(_listeners);
       if (_listeners.keys.contains(data["path"])) {
         if (data["data"] != null) {
           _listeners[data["path"]]?.call(data);
@@ -74,10 +76,7 @@ class WebSocketClient {
           _listeners[data["path"]]?.call();
         }
       }
-    }
-    else if(data.containsKey("error")){
-      _listeners["error"]!(data);
-    }
+    } 
     }catch(e){
       print("mende error ni $e");
     }

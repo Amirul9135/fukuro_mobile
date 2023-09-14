@@ -1,5 +1,4 @@
-import 'package:fukuro_mobile/Controller/Authentication.dart';
-import 'package:http/http.dart'; 
+import 'package:fukuro_mobile/Controller/Authentication.dart'; 
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 //this emthod set the currently logged in user id into one signal external id to allow recieving notification

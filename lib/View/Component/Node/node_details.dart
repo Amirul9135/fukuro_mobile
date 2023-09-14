@@ -1,12 +1,11 @@
- 
-
 import 'package:expansion_tile_group/expansion_tile_group.dart';
 import 'package:flutter/material.dart';
+import 'package:fukuro_mobile/Controller/fukuro_request.dart';
+import 'package:fukuro_mobile/Controller/node_controller.dart';
 import 'package:fukuro_mobile/Controller/utilities.dart';
 import 'package:fukuro_mobile/Model/node.dart';
-import 'package:fukuro_mobile/View/Component/Node/node_form.dart';
+import 'package:fukuro_mobile/View/Component/Node/node_form.dart'; 
 import 'package:sizer/sizer.dart';
- 
 
 class NodeDetails extends StatefulWidget {
   const NodeDetails({Key? key, required this.node}) : super(key: key);
@@ -22,6 +21,8 @@ class NodeDetailsState extends State<NodeDetails> {
 
   final GlobalKey<ExpansionTileCustomState> keyCardCredential = GlobalKey();
 
+  final Map<String, String> specs = {};
+
   bool lock = true;
   @override
   void initState() {
@@ -35,6 +36,7 @@ class NodeDetailsState extends State<NodeDetails> {
     // Initialize your state here
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _loadSpec();
       setState(() {
         keyCardCredential.currentState?.expand();
       });
@@ -49,7 +51,6 @@ class NodeDetailsState extends State<NodeDetails> {
         child: SingleChildScrollView(
             child: Column(children: [
           ExpansionTileBorderItem(
-            onExpansionChanged: expansionChange,
             expansionKey: keyCardCredential,
             title: const Row(
               children: [
@@ -74,7 +75,7 @@ class NodeDetailsState extends State<NodeDetails> {
               ),
               verticalGap(1.h),
               form,
-                    SizedBox(
+              SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -117,16 +118,44 @@ class NodeDetailsState extends State<NodeDetails> {
                   },
                 ),
               ),
-        
+            ],
+          ),
+          verticalGap(20),
+          ExpansionTileBorderItem(
+            title: const Row(
+              children: [
+                Icon(Icons.display_settings_rounded),
+                Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: Text(
+                    "Node Specifications",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                )
+              ],
+            ),
+            children: (specs.isNotEmpty) ? specs.keys.map((e) {
+              return Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(e),
+                      const Spacer(),
+                      Text(specs[e] ?? ''),
+                    ],
+                  ),
+                  const Divider(), // Adds a horizontal line between rows
+                ],
+              );
+            }).toList():
+            [
+            const   Center(child: Text("No specification data, connect agent with the server to retrieve specification data"),)
             ],
           ),
         ])));
-  }
-
-  expansionChange(isExpand) {
-    if (isExpand) {
-      setState(() {});
-    }
   }
 
   saveChanges() {
@@ -138,6 +167,16 @@ class NodeDetailsState extends State<NodeDetails> {
       lock = !lock;
       formStateKey.currentState?.toggleLock(lock);
     });
+  }
+
+  _loadSpec() async {
+    FukuroResponse res =
+        await NodeController.getNodeSpec(widget.node.getNodeId());
+    if (res.ok()) {
+      for (var k in res.body().keys) {
+        specs[k] = res.body()[k];
+      }
+    }
   }
 
   @override

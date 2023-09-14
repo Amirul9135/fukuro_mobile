@@ -188,8 +188,7 @@ class CPUConfigurationState extends State<CPUConfiguration> {
           loading = false;
           setState(() {});
         } else {
-          FukuroDialog.error(context, 'Failed', 'Unable to load cpu config');
-          _loadConfig();
+          FukuroDialog.error(context, 'Failed', 'Unable to load cpu config'); 
           return;
         }
       } 

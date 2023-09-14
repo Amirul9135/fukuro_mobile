@@ -37,6 +37,8 @@ class NodeRealtimeScreenState extends State<NodeRealtimeScreen>
   bool isCommand = true;
   List<Map<String, dynamic>>? metricSelection;
   bool isConnected = false;
+  String emptyText =
+      "Click the button at the bottom right of the screen to perform action";
 
   List<Command> commands = [];
 
@@ -56,16 +58,18 @@ class NodeRealtimeScreenState extends State<NodeRealtimeScreen>
   @override
   Widget build(BuildContext context) {
     if (!isConnected) {
-      return const Center(child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(),
-          SizedBox(
-              height: 16), // Adjust the space between the indicator and text
-          Text('Connecting...'),
-        ],
-      ),);
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(
+                height: 16), // Adjust the space between the indicator and text
+            Text('Connecting...'),
+          ],
+        ),
+      );
     }
     // TODO: implement build
     return Scaffold(
@@ -73,15 +77,22 @@ class NodeRealtimeScreenState extends State<NodeRealtimeScreen>
         children: [
           // Your main content goes here
           Expanded(
-              child: ListView(
-            children: charts.map((report) {
-              return Container(
-                margin:
-                    const EdgeInsets.only(bottom: 15.0), // Set the margin here
-                child: report,
-              );
-            }).toList(),
-          )),
+              child:  (charts.isNotEmpty) ? ListView(
+            children:charts.map((report) {
+                    return Container(
+                      margin: const EdgeInsets.only(
+                          bottom: 15.0), // Set the margin here
+                      child: report,
+                    );
+                  }).toList() ,
+          ) : 
+                    Center(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [Text(emptyText)]),
+                    )
+          ),
           Positioned(
             bottom: 0,
             left: 0,
@@ -408,11 +419,14 @@ class NodeRealtimeScreenState extends State<NodeRealtimeScreen>
   }
 
   //websockets
-  _websocket_error(msg) {
+  _websocket_error(msg) async {
+    print('ws errrr ');
     if (mounted) {
-      FukuroDialog.error(context, "Websocket Error", msg.toString());
-
-      Navigator.of(context).pop();
+      await FukuroDialog.error(
+          context, "Websocket Error", msg['data']?.toString() ?? "");
+    
+      Navigator.pop(context); 
+      Navigator.pushNamed(context, '/node', arguments: widget.node);
     }
   }
 

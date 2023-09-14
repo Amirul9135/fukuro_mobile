@@ -118,6 +118,7 @@ class DISKConfigurationState extends State<DISKConfiguration> {
         disk.monitored = !disk.monitored;
         FukuroResponse res = await NodeController.toggleDisk(
             widget.node.getNodeId(), disk.name, disk.monitored);
+        print(res.body());
         if (res.ok()) {
           if (mounted) {
             FukuroDialog.success(
@@ -135,7 +136,7 @@ class DISKConfigurationState extends State<DISKConfiguration> {
                 context,
                 "Failed",
                 "Failed to " +
-                    (disk.monitored ? "Enabled" : "Disabled") +
+                    (disk.monitored ? "Enable " : "Disable ") +
                     disk.name);
           }
         }
@@ -256,8 +257,7 @@ class DISKConfigurationState extends State<DISKConfiguration> {
           loading = false;
           setState(() {});
         } else {
-          FukuroDialog.error(context, 'Failed', 'Unable to load disk config');
-          _loadConfig();
+          FukuroDialog.error(context, 'Failed', 'Unable to load disk config'); 
           return;
         }
       }

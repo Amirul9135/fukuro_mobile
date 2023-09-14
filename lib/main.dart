@@ -2,8 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/OneSignal.dart'; 
  
-import 'package:fukuro_mobile/Model/node.dart'; 
-import 'package:fukuro_mobile/View/app_setting.dart';
+import 'package:fukuro_mobile/Model/node.dart';  
 import 'package:fukuro_mobile/View/home.dart';
 import 'package:fukuro_mobile/View/node_main.dart';
 import 'package:fukuro_mobile/View/node_register.dart';
@@ -55,8 +54,7 @@ class MyApp extends StatelessWidget {
         },
       routes: {
         '/': (context) => const Login(),
-        '/register': (context) => const Register(),
-        '/setting': (context) => const AppSettingScreen(),
+        '/register': (context) => const Register(), 
         '/node/register': (context) => const NodeRegister()
       },
       );

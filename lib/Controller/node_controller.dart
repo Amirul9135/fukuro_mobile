@@ -9,6 +9,24 @@ import 'package:http/http.dart' as http;
 
 class NodeController {
 
+  
+  static Future<FukuroResponse> getLogs(int nodeId,String start,String end) async{
+    
+    String dts =  DateTime.parse(start).toUtc().toIso8601String();
+    String dte =  DateTime.parse(end).toUtc().toIso8601String();
+    FukuroRequest req = FukuroRequest('node/$nodeId/log/$dts/$dte');
+    http.Response httpr= await req.get();
+    return  FukuroResponse(res: httpr) ;
+
+  }
+  static Future<FukuroResponse> getNodeSpec(int nodeId) async{
+    FukuroRequest req = FukuroRequest('node/$nodeId/info');
+    http.Response httpr= await req.get();
+    return  FukuroResponse(res: httpr) ;
+
+  }
+
+  //recheck here
   static Future<FukuroResponse> toggleAccess(int nodeId,int userId,bool access) async{
     FukuroRequest req = FukuroRequest('node/$nodeId/grant/$userId');
     http.Response httpr;
