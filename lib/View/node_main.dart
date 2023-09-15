@@ -27,7 +27,7 @@ class NodeMainScreenState extends State<NodeMainScreen> {
   }
 
   @override
-  Widget build(BuildContext context) { 
+  Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.thisNode.getName()),
@@ -62,6 +62,29 @@ class NodeMainScreenState extends State<NodeMainScreen> {
                       ),
                     ],
                   )),
+              Container(
+                decoration: BoxDecoration(
+                  color: (widget.thisNode.access == 1)
+                      ? Colors.blue.shade900
+                      : (widget.thisNode.access == 2)
+                          ? Colors.blue
+                          : (widget.thisNode.access == 3)
+                              ? Colors.lightBlueAccent
+                              : Colors.white,
+                ),
+                padding: const EdgeInsets.all(5),
+                child: Text(
+                  (widget.thisNode.access == 1)
+                      ? "Admin"
+                      : (widget.thisNode.access == 2)
+                          ? "Collaborator"
+                          : (widget.thisNode.access == 3)
+                              ? "Guest"
+                              : "",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
               ListTile(
                 leading: const Icon(Icons.connected_tv_outlined),
                 title: const Text('Node Details'),
@@ -119,13 +142,15 @@ class NodeMainScreenState extends State<NodeMainScreen> {
                 onTap: () => _selectMenuItem('Node_Config'),
                 selected: _selectedMenuItem == 'Node_Config',
               ),
-              (widget.thisNode.access == 1) ?
-              ListTile(
-                leading: const Icon(Icons.supervised_user_circle_outlined),
-                title: const Text('Collaboration'),
-                onTap: () => _selectMenuItem('Collaboration'),
-                selected: _selectedMenuItem == 'Collaboration',
-              ):Container(),
+              (widget.thisNode.access == 1)
+                  ? ListTile(
+                      leading:
+                          const Icon(Icons.supervised_user_circle_outlined),
+                      title: const Text('Collaboration'),
+                      onTap: () => _selectMenuItem('Collaboration'),
+                      selected: _selectedMenuItem == 'Collaboration',
+                    )
+                  : Container(),
               const Spacer(),
               const Divider(),
               ListTile(
@@ -149,7 +174,10 @@ class NodeMainScreenState extends State<NodeMainScreen> {
                         ? MetricReportScreen(node: widget.thisNode)
                         : _selectedMenuItem == 'realtime'
                             ? NodeRealtimeScreen(node: widget.thisNode)
-                            : _selectedMenuItem =="Collaboration"? CollaborationScreen(node: widget.thisNode)
-                            : _selectedMenuItem == "Log" ? NodeLog(node:widget.thisNode):  Text("placeholder"));
+                            : _selectedMenuItem == "Collaboration"
+                                ? CollaborationScreen(node: widget.thisNode)
+                                : _selectedMenuItem == "Log"
+                                    ? NodeLog(node: widget.thisNode)
+                                    : Text("placeholder"));
   }
 }
