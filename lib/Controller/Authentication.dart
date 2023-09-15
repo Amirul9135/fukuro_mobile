@@ -10,6 +10,31 @@ import 'package:http/http.dart' as http;
 
 class Authentication {
 
+  static Future<FukuroResponse> loadProfile() async {
+    print('load profile');
+    FukuroRequest req = FukuroRequest('user');
+    http.Response httpr = await req.get();
+    return FukuroResponse(res: httpr);
+  }
+
+  static Future<FukuroResponse> updatePass(String curPass, String newPass) async {
+    FukuroRequest req = FukuroRequest('user/pass');
+    req.addBody({
+      "password":curPass,
+      "newpassword":newPass
+    });      
+    http.Response htres = await req.put();
+    return FukuroResponse(res: htres);
+
+  }
+  static Future<FukuroResponse> update(dynamic userData) async {
+    FukuroRequest req = FukuroRequest('user');
+    req.addBody(userData);      
+    http.Response htres = await req.put();
+    return FukuroResponse(res: htres);
+
+  }
+
   static Future<FukuroResponse> register(dynamic userData)async{
     FukuroRequest req = FukuroRequest('user');
     req.addBody(userData);      

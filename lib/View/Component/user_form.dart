@@ -50,8 +50,7 @@ class UserFormState extends State<UserForm> {
             fieldName: "Username",
             type: FukuroForm.inputText,
             lengthMin: 6,
-            hint: 'Enter your username',
-            readOnly: (widget.onlyChangeable == true),
+            hint: 'Enter your username', 
             icon: Icon(Icons.account_circle_outlined),
             help: "Used as your log in credential")
         .build();
@@ -70,6 +69,9 @@ class UserFormState extends State<UserForm> {
             icon: Icon(Icons.phone),
             validator: r"^[0-9]{10,}")
         .build();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+       _loadUser();
+    });
   }
 
   @override
@@ -149,7 +151,29 @@ class UserFormState extends State<UserForm> {
               ),
             ),
          
-            ],)) 
+            ],)),
+            (widget.register == false) ? 
+            SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4)),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Text(
+                      'Change Password',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  onPressed: () {
+                    _changePass();
+                  },
+                ),
+              ):Container(), 
+
              ]))),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -165,9 +189,9 @@ class UserFormState extends State<UserForm> {
     );
   }
   _processUserData() async {
-    bool validate1 = _formKey.currentState?.validateForm() ?? false;
+    bool validate1 = _formKey.currentState?.validateForm() ?? false; 
     bool validate2 = _passFormKey.currentState?.validate() ?? false;
-    if(validate1 && validate2){
+    if((widget.register && validate1 && validate2) || (!widget.register && validate1)){
       Map<String,dynamic> userdata = {};
       userdata["name"] = fields["Name"]!["controller"]!.getValueStr();
       userdata["username"] = fields["Username"]!["controller"]!.getValueStr();
@@ -187,10 +211,75 @@ class UserFormState extends State<UserForm> {
           FukuroDialog.error(context, "Failed to register", res.msg().toString());
         }
       }
+      else{
+        FukuroResponse res = await Authentication.update(userdata);
+        if(!mounted){
+          return;
+        }
+        if(res.ok()){
+          await FukuroDialog.success(context, "Updated", "Profile information updated"); 
+        }else{
+          FukuroDialog.error(context, "Failed to Update", res.msg().toString());
+        }
+        _loadUser();
+
+      }
     }
     else{
       FukuroDialog.error(context, "Invalid input", "Please ensure all field are correctly inserted");
 
+    }
+  }
+  _loadUser()async{ 
+      if(!widget.register){
+        FukuroResponse res = await Authentication.loadProfile();
+        if(res.ok()){
+          fields["Name"]!['value'] = res.body()['name'];
+          fields["Username"]!['value'] = res.body()['username'];
+          fields["Email"]!['value'] = res.body()['email'];
+          fields["Phone"]!['value'] = res.body()['phone'];
+          fields["Name"]!['refresh'] = true;
+          fields["Username"]!['refresh'] = true;
+          fields["Email"]!['refresh'] = true;
+          fields["Phone"]!['refresh'] = true;
+          if(mounted){
+            setState(() {
+              
+            });
+          }
+        }
+        else{
+          if(mounted){ 
+            FukuroDialog.error(context, "Error", "Failed to load profile data ${res.msg()}");
+          }
+        }
+        print(res.body());
+      }
+  }
+  _changePass() async{
+    String current = await FukuroDialog.promptForText(context, "Current Password", "", "Insert your current password");
+    print(current);
+    if(current.isNotEmpty && mounted){
+      String newPass = await FukuroDialog.promptForText(context, "New Password", "", "Insert New password");
+      if(newPass.length < 6  && mounted){
+        FukuroDialog.error(context, "Invalid", "Password must at least be 6 character and cannot be same with current password");
+      }
+      else if(mounted){
+        String newPass2 = await FukuroDialog.promptForText(context, "Confirm Password", "", "Insert New password again");
+        if(newPass2 != newPass && mounted){
+          FukuroDialog.error(context, "Invalid", "Password doesn't match");
+        }
+        else if(mounted){
+          FukuroResponse res = await Authentication.updatePass(current, newPass);
+          if(res.ok() && mounted){
+             FukuroDialog.success(context, "Success", "Password Changed");
+          }
+          else if(mounted){
+            FukuroDialog.error(context, "Failed to Change password", res.msg().toString());
+          }
+         
+        }
+      }
     }
   }
 }

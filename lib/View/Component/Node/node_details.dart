@@ -4,6 +4,7 @@ import 'package:fukuro_mobile/Controller/fukuro_request.dart';
 import 'package:fukuro_mobile/Controller/node_controller.dart';
 import 'package:fukuro_mobile/Controller/utilities.dart';
 import 'package:fukuro_mobile/Model/node.dart';
+import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/Component/Node/node_form.dart'; 
 import 'package:sizer/sizer.dart';
 
@@ -91,7 +92,9 @@ class NodeDetailsState extends State<NodeDetails> {
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    _changePass();
+                  },
                 ),
               ):Container(),
               (widget.node.access == 1 )?
@@ -181,6 +184,34 @@ class NodeDetailsState extends State<NodeDetails> {
     }
   }
 
+  _changePass() async{
+    String current = await FukuroDialog.promptForText(context, "Current Pass Key", "", "Insert your current Pass Key");
+    print(current);
+    if(current.isNotEmpty && mounted){
+      String newPass = await FukuroDialog.promptForText(context, "New Pass Key", "", "Insert New Pass Key");
+      if(newPass.length < 6  && mounted){
+        FukuroDialog.error(context, "Invalid", "Pass Key must at least be 6 character ");
+      }
+      else if(mounted){
+        String newPass2 = await FukuroDialog.promptForText(context, "Confirm Pass Key", "", "Insert New Pass Key again");
+        if(newPass2 != newPass && mounted){
+          FukuroDialog.error(context, "Invalid", "Pass Key doesn't match");
+        }
+        else if(mounted){
+          // apply change
+          FukuroResponse res = await NodeController.updatePass(widget.node.getNodeId(), current, newPass);
+          if(res.ok() && mounted){
+            FukuroDialog.success(context, "Success", 'Pass Key Changed');
+          }
+          else if(mounted){
+            FukuroDialog.error(context, "Failed", "Failed to change pass Key\n${res.msg().toString()}");
+          }
+
+         
+        }
+      }
+    }
+  }
   @override
   void dispose() {
     // Clean up resources and listeners here

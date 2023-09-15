@@ -10,6 +10,16 @@ import 'package:http/http.dart' as http;
 class NodeController {
 
   
+  static Future<FukuroResponse> updatePass(int nodeId, String curPasskey, String newPassKey) async {
+    FukuroRequest req = FukuroRequest('node/$nodeId/pass');
+    req.addBody({
+      "passKey":curPasskey,
+      "newpassKey":newPassKey
+    });      
+    http.Response htres = await req.put();
+    return FukuroResponse(res: htres);
+
+  }
   static Future<FukuroResponse> changeUserAccess(int nodeId,int userId,int targetRole) async{
     String url = "node/$nodeId/access/";
     if(targetRole == 0) {url += "$userId";}

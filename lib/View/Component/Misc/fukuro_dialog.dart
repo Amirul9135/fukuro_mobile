@@ -21,6 +21,7 @@ class FukuroDialog extends StatelessWidget {
   String CancelBtnText;
   String BtnText;
   bool textInput;
+  String txtInputVal;
   String inputHint;
   bool okpressed = false;
   final Function? okAction;
@@ -34,7 +35,8 @@ class FukuroDialog extends StatelessWidget {
       this.textInput = false,
       this.inputHint = "",
       this.CancelBtnText = "Cancel",
-      this.BtnText = "Ok"});
+      this.BtnText = "Ok",
+      this.txtInputVal = ""});
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +108,9 @@ class FukuroDialog extends StatelessWidget {
                 ),
                 onPressed: () {
                   Navigator.pop(context);
+                  if (textInput) {
+                    txtInputVal = _txtCont.text.trim();
+                  }
                   okpressed = true;
                   extraOkAction();
                 }),
@@ -134,8 +139,8 @@ class FukuroDialog extends StatelessWidget {
     );
   }
 
-  static warning(context, title, message)  {
-   return showDialog(
+  static warning(context, title, message) {
+    return showDialog(
         context: context,
         builder: (_) => FukuroDialog(
               title: title,
@@ -145,7 +150,7 @@ class FukuroDialog extends StatelessWidget {
   }
 
   static error(context, title, message) {
-   return showDialog(
+    return showDialog(
         context: context,
         builder: (_) => FukuroDialog(
               title: title,
@@ -155,7 +160,7 @@ class FukuroDialog extends StatelessWidget {
   }
 
   static info(context, title, message) {
-  return  showDialog(
+    return showDialog(
         context: context,
         builder: (_) => FukuroDialog(
               title: title,
@@ -163,15 +168,33 @@ class FukuroDialog extends StatelessWidget {
               mode: FukuroDialog.INFO,
             ));
   }
-  
+
   static success(context, title, message) {
-  return  showDialog(
+    return showDialog(
         context: context,
         builder: (_) => FukuroDialog(
               title: title,
               message: message,
               mode: FukuroDialog.SUCCESS,
             ));
+  }
+
+  static Future<String> promptForText(context,String title,String message,String? hint) async {
+    String txtinp = "";
+    FukuroDialog msg = FukuroDialog(
+      title: title,
+      message: message,
+      mode: FukuroDialog.QUESTION,
+      NoBtn: true,
+      BtnText: "Proceed",
+      textInput: true,
+      inputHint: hint?? '',
+    );
+    await showDialog(context: context, builder: (_)=> msg);
+    if(msg.okpressed){
+      txtinp = msg.txtInputVal;
+    }
+    return txtinp;
   }
 
   extraOkAction() {
