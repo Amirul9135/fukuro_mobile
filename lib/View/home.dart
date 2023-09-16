@@ -53,22 +53,23 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
       child: Scaffold(
         body: CustomScrollView(
           slivers: [
-            const SliverAppBar(
+            SliverAppBar(
+              backgroundColor: Colors.lightBlue,
               expandedHeight: 300.0,
               floating: true,
               pinned: true,
               snap: false,
               automaticallyImplyLeading: false,
-              flexibleSpace: FlexibleSpaceBar(
+              
+              flexibleSpace: FlexibleSpaceBar( 
                 centerTitle: true,
                 collapseMode: CollapseMode.parallax,
-                title: Text(
-                  "FUKURO",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16.0,
-                  ),
-                ),
+                title:const Text("HOME"),
+                 background: Image.asset(
+                     'assets/fukuro name wbg.png',
+                    fit: BoxFit.cover,
+                  )
+
               ),
             ),
             SliverPersistentHeader(

@@ -1,9 +1,8 @@
- 
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
 import 'package:fukuro_mobile/View/register.dart';
- 
-import 'package:flutter/material.dart'; 
-import 'package:fukuro_mobile/Controller/Authentication.dart'; 
+
+import 'package:flutter/material.dart';
+import 'package:fukuro_mobile/Controller/Authentication.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -13,66 +12,44 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  bool _verified = false; 
-  bool _isInitialized = false; 
- 
-  
-   @override
-   void initState() {
+  bool _verified = false;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
     // TODO: implement initState
     super.initState();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) async {  
-          _verified = await Authentication.verifyToken();
-          _isInitialized = true;  
-          print("verifised$_verified");
-            setState(() {
-              
-            });
-          if(_verified){ 
-            
-            Navigator.pushNamed(context, '/home');
-          } 
-        });  
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _verified = await Authentication.verifyToken();
+      _isInitialized = true;
+      print("verifised$_verified");
+      setState(() {});
+      if (_verified) {
+        Navigator.pushNamed(context, '/home');
+      }
+    });
   }
 
   @override
-  Widget build(BuildContext context) {
-    final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
-     
-    if(_isInitialized && !_verified) {
-      return Scaffold(
-        body: Center(
-            child: isSmallScreen
-                ? const Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _Logo(),
-                      _FormContent(),
-                    ],
-                  )
-                : Container(
-                    padding: const EdgeInsets.all(32.0),
-                    constraints: const BoxConstraints(maxWidth: 800),
-                    child: const Row(
-                      children: [
-                        Expanded(child: _Logo()),
-                        Expanded(
-                          child: Center(child: _FormContent()),
-                        ),
-                      ],
-                    ),
-                  )),
-      );
-    }
-    else{
+  Widget build(BuildContext context) { 
+
+    if (_isInitialized && !_verified) {
+      return const Scaffold(
+          body: Center(
+              child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _Logo(),
+          _FormContent(),
+        ],
+      )));
+    } else {
       return const Center(
         child: CircularProgressIndicator(),
       );
     }
-    
   }
- }
+}
 
 class _Logo extends StatelessWidget {
   const _Logo({Key? key}) : super(key: key);
@@ -84,20 +61,12 @@ class _Logo extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        FlutterLogo(size: isSmallScreen ? 100 : 200),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            "FUKURO",
-            textAlign: TextAlign.center,
-            style: isSmallScreen
-                ? Theme.of(context).textTheme.headline5
-                : Theme.of(context)
-                    .textTheme
-                    .headline4
-                    ?.copyWith(color: Colors.black),
-          ),
-        )
+        Image.asset(
+          'assets/fukuro name.png', // Provide the path to your logo
+          height:
+              isSmallScreen ? 100 : 150, // Adjust height based on screen size
+          color: Colors.blue, // Optional: Change the color of the image
+        ),
       ],
     );
   }
@@ -119,7 +88,7 @@ class __FormContentState extends State<_FormContent> {
   bool loader = false;
   @override
   Widget build(BuildContext context) {
-       if (loader) {
+    if (loader) {
       return Container(
         color: Colors.white,
         child: const Center(
@@ -131,13 +100,13 @@ class __FormContentState extends State<_FormContent> {
               SizedBox(
                   height:
                       16), // Adjust the space between the indicator and text
-             
             ],
           ),
         ),
       );
     }
     return Container(
+      margin: EdgeInsets.only(top: 50),
       constraints: const BoxConstraints(maxWidth: 300),
       child: Form(
         key: _formKey,
@@ -215,19 +184,15 @@ class __FormContentState extends State<_FormContent> {
                 onPressed: () async {
                   if (_formKey.currentState?.validate() ?? false) {
                     loader = true;
-                    setState(() {
-                      
-                    });
-                    bool login = await Authentication.login(tecUsername.text,tecPassword.text); 
-                    if(mounted){
-
-                    loader = false;
-                    setState(() {
-                      
-                    });
+                    setState(() {});
+                    bool login = await Authentication.login(
+                        tecUsername.text, tecPassword.text);
+                    if (mounted) {
+                      loader = false;
+                      setState(() {});
                     }
                     if (login) {
-                      if (mounted) { 
+                      if (mounted) {
                         Navigator.pushNamed(context, '/home');
                       }
                     } else {
