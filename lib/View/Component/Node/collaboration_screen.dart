@@ -5,6 +5,7 @@ import 'package:fukuro_mobile/Controller/node_controller.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/Model/user.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
+import 'package:sizer/sizer.dart';
 
 class CollaborationScreen extends StatefulWidget {
   final Node node;
@@ -47,7 +48,7 @@ class CollaborationScreenState extends State<CollaborationScreen>
               vsync: this,
             ),
             pinned: true,
-            floating: false,
+            floating: true,
           ),
           SliverFillRemaining(
             child: TabBarView(
@@ -259,14 +260,7 @@ class UserListState extends State<UserList> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Column(children: [
-      Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Text(
-          widget.title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-      ),
+    return  
       (loading)
           ? const Expanded(
               child: Center(
@@ -283,42 +277,162 @@ class UserListState extends State<UserList> {
                 ),
               ),
             )
-          : Expanded(
-              child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  color: Colors.lightBlue.withOpacity(.1)),
-              margin: const EdgeInsets.symmetric(horizontal: 5),
-              child: ListView(
-                  children: data.map((e) {
-                print("mapping");
-                return GestureDetector(
-                  onTap: () async {
-                    if (await widget.fnTap?.call(e) == true) {
-                      _loadUser();
-                    }
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
+          : Stack(
+              fit: StackFit.expand,
+              children: [
+                Container( 
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.0),
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Colors.blue, // Border color
-                        width: 2.0, // Border width
+                      color: Colors.lightBlue.withOpacity(.1)),
+                  margin: const EdgeInsets.symmetric(horizontal: 5),
+                  child: ListView(
+                    shrinkWrap: true,
+                      children: data.map((e) {
+                    print("mapping");
+                    return GestureDetector(
+                      onTap: () async {
+                        if (await widget.fnTap?.call(e) == true) {
+                          _loadUser();
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: Colors.white,
+                          border: Border.all(
+                            color: Colors.blue, // Border color
+                            width: 2.0, // Border width
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        margin: const EdgeInsets.only(
+                            bottom: 15.0), // Set the margin here
+                        child: Row(
+                          children: [
+                            Flexible(
+                              flex: 10,
+                              child: Center(
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue, // Background color
+                                      borderRadius: BorderRadius.circular(100),
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 2.5),
+                                    child: IconButton(
+                                      icon: const Icon(
+                                        Icons.person_sharp,
+                                        color: Colors.white,
+                                      ),
+                                      onPressed: () {},
+                                    )),
+                              ),
+                            ),
+                            Flexible(
+                                flex: 80,
+                                child: Container(
+                                    margin: EdgeInsets.only(right: 20),
+                                    width: double.infinity,
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              e.name,
+                                              textAlign: TextAlign.start,
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16),
+                                            ),
+                                            const Spacer(),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                  color: (e.accessId == 1)
+                                                      ? Colors.blue.shade900
+                                                      : (e.accessId == 2)
+                                                          ? Colors.blue
+                                                          : (e.accessId == 3)
+                                                              ? Colors
+                                                                  .lightBlueAccent
+                                                              : Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          50)),
+                                              padding: const EdgeInsets.all(5),
+                                              child: Text(
+                                                (e.accessId == 1)
+                                                    ? "Admin"
+                                                    : (e.accessId == 2)
+                                                        ? "Collaborator"
+                                                        : (e.accessId == 3)
+                                                            ? "Guest"
+                                                            : "",
+                                                style: const TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Flexible(
+                                              flex: 1,
+                                              fit: FlexFit.tight,
+                                              child: Text(
+                                                "Email : ${e.email}",
+                                                softWrap: true,
+                                                style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 15),
+                                              ),
+                                            ),
+                                            Flexible(
+                                                flex: 1,
+                                                fit: FlexFit.tight,
+                                                child: Text(
+                                                  "Phone : ${e.phone}",
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ))
+                                          ],
+                                        ),
+                                      ],
+                                    ))),
+                          ],
+                        ),
                       ),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    margin: const EdgeInsets.only(
-                        bottom: 15.0), // Set the margin here
-                    child: Row(
+                    );
+                  }).toList()),
+                ),
+                Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.all(5),
+                      child: Row(
                       children: [
                         Flexible(
-                          flex: 10,
-                          child: Center(
+                            flex: 9,
                             child: Container(
+                              padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+                              child: TextFormField(
+                                controller: txt,
+                              ),
+                            )),
+                        Flexible(
+                            flex: 1,
+                            child: Center(
+                              child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.blue, // Background color
+                                  color: Colors.lightBlue, // Background color
                                   borderRadius: BorderRadius.circular(100),
                                   border: Border.all(
                                     color: Colors.white,
@@ -329,122 +443,21 @@ class UserListState extends State<UserList> {
                                     const EdgeInsets.symmetric(horizontal: 2.5),
                                 child: IconButton(
                                   icon: const Icon(
-                                    Icons.person_sharp,
+                                    Icons.search_rounded,
                                     color: Colors.white,
                                   ),
-                                  onPressed: () {},
-                                )),
-                          ),
-                        ),
-                        Flexible(
-                            flex: 80,
-                            child: Container(
-                                margin: EdgeInsets.only(right: 20),
-                                width: double.infinity,
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          e.name,
-                                          textAlign: TextAlign.start,
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16),
-                                        ),
-                                        const Spacer(),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: (e.accessId == 1) ? Colors.blue.shade900 :
-                                                    (e.accessId == 2) ?  Colors.blue :
-                                                    (e.accessId == 3) ?  Colors.lightBlueAccent :
-                                                    Colors.white
-                                            ,
-                                            borderRadius: BorderRadius.circular(50)
-                                          ),
-                                          padding: const EdgeInsets.all(5),
-                                          child:Text(
-                                          (e.accessId == 1) ? "Admin" :
-                                          (e.accessId == 2) ? "Collaborator" :
-                                          (e.accessId == 3) ? "Guest" : "" ,
-                                          style: const TextStyle(color: Colors.white),
-                                        ) ,
-                                        )
-                                        
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Flexible(
-                                          flex: 1,
-                                          fit: FlexFit.tight,
-                                          child: Text(
-                                            "Email : ${e.email}",
-                                            softWrap: true,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15),
-                                          ),
-                                        ),
-                                        Flexible(
-                                            flex: 1,
-                                            fit: FlexFit.tight,
-                                            child: Text(
-                                              "Phone : ${e.phone}",
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ))
-                                      ],
-                                    ),
-                                  ],
-                                ))),
+                                  onPressed: () {
+                                    _loadUser();
+                                  },
+                                ),
+                              ),
+                            ))
                       ],
+                    )
+                    ,)
                     ),
-                  ),
-                );
-              }).toList()),
-            )),
-      Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          child: Row(
-            children: [
-              Flexible(
-                  flex: 9,
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
-                    child: TextFormField(
-                      controller: txt,
-                    ),
-                  )),
-              Flexible(
-                  flex: 1,
-                  child: Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.lightBlue, // Background color
-                        borderRadius: BorderRadius.circular(100),
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2.0,
-                        ),
-                      ),
-                      margin: const EdgeInsets.symmetric(horizontal: 2.5),
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.search_rounded,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          _loadUser();
-                        },
-                      ),
-                    ),
-                  ))
-            ],
-          ))
-    ]);
+              ],
+            );
   }
 
   _loadUser() async {

@@ -75,11 +75,10 @@ class NodeRealtimeScreenState extends State<NodeRealtimeScreen>
     // TODO: implement build
     return Scaffold(
       body: Stack(
+         fit: StackFit.expand, 
         children: [
-          // Your main content goes here
-          Expanded(
-              child: (charts.isNotEmpty)
-                  ? ListView(
+          (charts.isNotEmpty)
+                  ? ListView( 
                       children: charts.map((report) {
                         return Container(
                           margin: const EdgeInsets.only(
@@ -93,7 +92,10 @@ class NodeRealtimeScreenState extends State<NodeRealtimeScreen>
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [Text(emptyText)]),
-                    )),
+                    )
+
+
+                    ,
           Positioned(
             bottom: 0,
             left: 0,
