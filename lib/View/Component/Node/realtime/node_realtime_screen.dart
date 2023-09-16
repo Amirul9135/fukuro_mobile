@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -77,22 +78,22 @@ class NodeRealtimeScreenState extends State<NodeRealtimeScreen>
         children: [
           // Your main content goes here
           Expanded(
-              child:  (charts.isNotEmpty) ? ListView(
-            children:charts.map((report) {
-                    return Container(
-                      margin: const EdgeInsets.only(
-                          bottom: 15.0), // Set the margin here
-                      child: report,
-                    );
-                  }).toList() ,
-          ) : 
-                    Center(
+              child: (charts.isNotEmpty)
+                  ? ListView(
+                      children: charts.map((report) {
+                        return Container(
+                          margin: const EdgeInsets.only(
+                              bottom: 15.0), // Set the margin here
+                          child: report,
+                        );
+                      }).toList(),
+                    )
+                  : Center(
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [Text(emptyText)]),
-                    )
-          ),
+                    )),
           Positioned(
             bottom: 0,
             left: 0,
@@ -176,22 +177,30 @@ class NodeRealtimeScreenState extends State<NodeRealtimeScreen>
                       shrinkWrap: true,
                       children: commands.map((cmd) {
                         return Container(
-                            margin: const EdgeInsets.only(
-                                bottom: 15.0), // Set the margin here
-                            child: Row(
-                              children: [
-                                Text(
-                                  cmd.dtString() + " : ",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                Text(cmd.text,
+                          margin: const EdgeInsets.only(
+                              bottom: 15.0), // Set the margin here
+                          child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    cmd.dtString() + " : ",
                                     style: TextStyle(
-                                      color: (cmd.input == true)
-                                          ? Colors.blue
-                                          : Colors.yellow,
-                                    ))
-                              ],
-                            ));
+                                      color: Colors.white,
+                                      fontFamily: 'RobotoMono',
+                                    ),
+                                  ),
+                                  Text(cmd.text,
+                                      style: TextStyle(
+                                        color: (cmd.input == true)
+                                            ? Colors.blue
+                                            : Colors.yellow, 
+                                        fontFamily: 'RobotoMono',
+                                        
+                                      ))
+                                ],
+                              )),
+                        );
                       }).toList(),
                     ),
                   )),
@@ -276,42 +285,38 @@ class NodeRealtimeScreenState extends State<NodeRealtimeScreen>
           ),
         ],
       ),
-      floatingActionButton: 
-      (widget.node.access == 3) ? 
-      FloatingActionButton(
-                onPressed: () {
-                  
-                    _selectMetric();
-                },
+      floatingActionButton: (widget.node.access == 3)
+          ? FloatingActionButton(
+              onPressed: () {
+                _selectMetric();
+              },
 
-                hoverColor: Colors.blue, // Optional: Change the hover color
-                hoverElevation: 10, // Optional: Adjust the elevation on hover
-                child: const Icon(Icons.display_settings_rounded),
-              )
-              :
-      
-      isTerminalVisible
-          ? Container()
-          : ExpandableFab(
-              icon: const Icon(Icons.ads_click),
-              distance: 60,
-              children: [
-                ActionButton(
-                  onPressed: () {
-                    setState(() {
-                      isTerminalVisible = true;
-                    });
-                  },
-                  icon: const Icon(Icons.code_rounded),
+              hoverColor: Colors.blue, // Optional: Change the hover color
+              hoverElevation: 10, // Optional: Adjust the elevation on hover
+              child: const Icon(Icons.display_settings_rounded),
+            )
+          : isTerminalVisible
+              ? Container()
+              : ExpandableFab(
+                  icon: const Icon(Icons.ads_click),
+                  distance: 60,
+                  children: [
+                    ActionButton(
+                      onPressed: () {
+                        setState(() {
+                          isTerminalVisible = true;
+                        });
+                      },
+                      icon: const Icon(Icons.code_rounded),
+                    ),
+                    ActionButton(
+                      onPressed: () {
+                        _selectMetric();
+                      },
+                      icon: const Icon(Icons.display_settings_rounded),
+                    ),
+                  ],
                 ),
-                ActionButton(
-                  onPressed: () {
-                    _selectMetric();
-                  },
-                  icon: const Icon(Icons.display_settings_rounded),
-                ),
-              ],
-            ),
     );
   }
 
@@ -438,8 +443,8 @@ class NodeRealtimeScreenState extends State<NodeRealtimeScreen>
     if (mounted) {
       await FukuroDialog.error(
           context, "Websocket Error", msg['data']?.toString() ?? "");
-    
-      Navigator.pop(context); 
+
+      Navigator.pop(context);
       Navigator.pushNamed(context, '/node', arguments: widget.node);
     }
   }
