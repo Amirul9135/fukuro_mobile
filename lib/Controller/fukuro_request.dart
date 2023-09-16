@@ -11,12 +11,12 @@ class FukuroRequest {
   //static String _fukuroUrl = "http://10.0.2.2:5000/api/"; //<< emulator
   //static String wsfukuroUrl = "ws://10.0.2.2:5000";
 
-  static String _fukuroUrl = "http://192.168.8.102:5000/api/";// << local
-  static String wsfukuroUrl = "ws://192.168.8.102:5000";
+ // static String _fukuroUrl = "http://192.168.8.102:5000/api/";// << local
+ // static String wsfukuroUrl = "ws://192.168.8.102:5000";
 
  
- // static String _fukuroUrl = "http://139.59.233.99:5001/api/";  //<< live on DGO
- // static String wsfukuroUrl = "ws://139.59.233.99:5001"; 
+  static String _fukuroUrl = "http://139.59.233.99:5001/api/";  //<< live on DGO
+  static String wsfukuroUrl = "ws://139.59.233.99:5001"; 
   static String getApiUrl() { 
     
     return _fukuroUrl;
