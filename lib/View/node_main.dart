@@ -109,8 +109,7 @@ class NodeMainScreenState extends State<NodeMainScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              const Spacer(),
+              ), 
               ListTile(
                 leading: const Icon(Icons.monitor_heart_outlined),
                 title: const Text('Connect Realtime'),
@@ -150,8 +149,7 @@ class NodeMainScreenState extends State<NodeMainScreen> {
                       onTap: () => _selectMenuItem('Collaboration'),
                       selected: _selectedMenuItem == 'Collaboration',
                     )
-                  : Container(),
-              const Spacer(),
+                  : Container(), 
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.exit_to_app),

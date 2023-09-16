@@ -46,8 +46,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ),
         ),
       );
-    }
-
+    } 
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -55,7 +54,8 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
           slivers: [
             SliverAppBar(
               backgroundColor: Colors.lightBlue,
-              expandedHeight: 300.0,
+              expandedHeight: 350.0,
+              
               floating: true,
               pinned: true,
               snap: false,
@@ -67,7 +67,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 title:const Text("HOME"),
                  background: Image.asset(
                      'assets/fukuro name wbg.png',
-                    fit: BoxFit.cover,
+                     fit: BoxFit.fill,
                   )
 
               ),
