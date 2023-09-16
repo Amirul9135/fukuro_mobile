@@ -4,8 +4,7 @@ import 'package:fukuro_mobile/Controller/fukuro_request.dart';
 import 'package:fukuro_mobile/Controller/node_controller.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/Model/user.dart';
-import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
-import 'package:sizer/sizer.dart';
+import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart'; 
 
 class CollaborationScreen extends StatefulWidget {
   final Node node;
@@ -311,7 +310,7 @@ class UserListState extends State<UserList> {
                         child: Row(
                           children: [
                             Flexible(
-                              flex: 10,
+                              flex: 20,
                               child: Center(
                                 child: Container(
                                     decoration: BoxDecoration(
@@ -420,7 +419,7 @@ class UserListState extends State<UserList> {
                       child: Row(
                       children: [
                         Flexible(
-                            flex: 9,
+                            flex: 8,
                             child: Container(
                               padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
                               child: TextFormField(
@@ -428,7 +427,7 @@ class UserListState extends State<UserList> {
                               ),
                             )),
                         Flexible(
-                            flex: 1,
+                            flex: 2,
                             child: Center(
                               child: Container(
                                 decoration: BoxDecoration(

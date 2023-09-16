@@ -209,7 +209,7 @@ class NodeRealtimeScreenState extends State<NodeRealtimeScreen>
                   Row(
                     children: [
                       Flexible(
-                          flex: 9,
+                          flex: 8,
                           child: Container(
                             padding: const EdgeInsets.all(5),
                             color: Colors.white,
@@ -226,7 +226,7 @@ class NodeRealtimeScreenState extends State<NodeRealtimeScreen>
                             ),
                           )), // Add some space between the TextField and the button
                       Flexible(
-                          flex: 1,
+                          flex: 2,
                           child: Container(
                               padding: const EdgeInsets.all(5),
                               color: Colors.white,

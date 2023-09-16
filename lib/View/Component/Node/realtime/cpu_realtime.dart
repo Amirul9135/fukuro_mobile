@@ -137,7 +137,7 @@ class CPURealtimeState extends State<CPURealtime> {
             Row(
               children: [ 
                 Flexible(
-                  flex: 45,
+                  flex: 4,
                   child: Container(
                     width: double.infinity,
                     margin: const EdgeInsets.symmetric(horizontal: 2.5),
@@ -145,7 +145,7 @@ class CPURealtimeState extends State<CPURealtime> {
                   ),
                 ),
                 Flexible(
-                  flex: 45,
+                  flex: 4,
                   child: Container(
                     width: double.infinity,
                     margin: const EdgeInsets.symmetric(horizontal: 2.5),
@@ -153,7 +153,7 @@ class CPURealtimeState extends State<CPURealtime> {
                   ),
                 ),
                 Flexible(
-                  flex: 10,
+                  flex: 2,
                   child: Center(
                     child: Container(
                         decoration: BoxDecoration(

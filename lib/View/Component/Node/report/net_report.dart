@@ -138,36 +138,60 @@ class NETReportState extends State<NETReport> {
                   ),
                 ),
                 Flexible(
-                  flex: 2,
+                  flex: 4,
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 2.5),
                     child: FukuroForm(fields: interval),
                   ),
-                ),
-                Flexible(
-                  flex: 1,
-                  child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.blue, // Background color
-                        borderRadius: BorderRadius.circular(100),
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2.0,
-                        ),
-                      ),
-                      margin: const EdgeInsets.symmetric(horizontal: 2.5),
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.search,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          _loadData();
-                        },
-                      )),
-                ),
+                ), 
               ],
             ),
+            
+            Row(
+              children: [
+                Container(
+                    decoration: BoxDecoration(
+                      color: Colors.red, // Background color
+                      borderRadius: BorderRadius.circular(100),
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2.0,
+                      ),
+                    ),
+                    margin: const EdgeInsets.symmetric(horizontal: 2.5),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        widget.fnDelete?.call(widget);
+                      },
+                    )),
+                Spacer(),
+                Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue, // Background color
+                      borderRadius: BorderRadius.circular(100),
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2.0,
+                      ),
+                    ),
+                    margin: const EdgeInsets.symmetric(horizontal: 2.5),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.search,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        _loadData();
+                      },
+                    ))
+              ],
+            ),
+          
+            
             Container(
               child: MetricChart(
                 key: chartKey,
@@ -265,15 +289,7 @@ class NETReportState extends State<NETReport> {
                       ),
                 ),
               ],
-            ),
-            if (widget.fnDelete != null)
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                onPressed: () {
-                  widget.fnDelete?.call(widget);
-                },
-                child: Text('Close Report'),
-              ),
+            ), 
           ],
         ));
   }

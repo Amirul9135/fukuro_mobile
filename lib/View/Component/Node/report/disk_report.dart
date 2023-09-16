@@ -1,7 +1,7 @@
 import 'package:expansion_tile_group/expansion_tile_group.dart';
 import 'package:flutter/material.dart';
 import 'package:fukuro_mobile/Controller/metric_controller.dart';
-import 'package:fukuro_mobile/Model/chart_data.dart'; 
+import 'package:fukuro_mobile/Model/chart_data.dart';
 import 'package:fukuro_mobile/Model/disk_usage.dart';
 import 'package:fukuro_mobile/Model/node.dart';
 import 'package:fukuro_mobile/View/Component/Misc/fukuro_dialog.dart';
@@ -14,7 +14,8 @@ class DISKReport extends StatefulWidget {
   final Node node;
   final Function? fnDelete;
   final String diskName;
-  const DISKReport({Key? key, required this.node, this.fnDelete,required this.diskName})
+  const DISKReport(
+      {Key? key, required this.node, this.fnDelete, required this.diskName})
       : super(key: key);
 
   @override
@@ -30,9 +31,9 @@ class DISKReportState extends State<DISKReport> {
   final Map<String, Map<dynamic, dynamic>> dtEnd = {};
 
   double threshold = 0;
-  late MetricChartSeries utilizationSeries; 
-  late MetricChartSeries readSeries; 
-  late MetricChartSeries writeSeries; 
+  late MetricChartSeries utilizationSeries;
+  late MetricChartSeries readSeries;
+  late MetricChartSeries writeSeries;
   ChartDataType selectedType = ChartDataType.DISKUtilization;
 
   @override
@@ -58,7 +59,7 @@ class DISKReportState extends State<DISKReport> {
         type: MetricChartType.area,
         datas: data,
         dataType: ChartDataType.DISKUtilization,
-        color: Colors.blue); 
+        color: Colors.blue);
     readSeries = MetricChartSeries(
         name: 'Reads (KB/s) ',
         type: MetricChartType.line,
@@ -73,9 +74,9 @@ class DISKReportState extends State<DISKReport> {
         color: Colors.yellow);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      chartKey.currentState?.addSeries(utilizationSeries); 
-      chartKey.currentState?.addSeries(readSeries); 
-      chartKey.currentState?.addSeries(writeSeries); 
+      chartKey.currentState?.addSeries(utilizationSeries);
+      chartKey.currentState?.addSeries(readSeries);
+      chartKey.currentState?.addSeries(writeSeries);
       if (mounted) setState(() {});
     });
   }
@@ -112,40 +113,61 @@ class DISKReportState extends State<DISKReport> {
                   ),
                 ),
                 Flexible(
-                  flex: 2,
+                  flex: 4,
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 2.5),
                     child: FukuroForm(fields: interval),
                   ),
                 ),
-                Flexible(
-                  flex: 1,
-                  child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.blue, // Background color
-                        borderRadius: BorderRadius.circular(100),
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2.0,
-                        ),
+              ],
+            ),
+            Row(
+              children: [
+                Container(
+                    decoration: BoxDecoration(
+                      color: Colors.red, // Background color
+                      borderRadius: BorderRadius.circular(100),
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2.0,
                       ),
-                      margin: const EdgeInsets.symmetric(horizontal: 2.5),
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.search,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          _loadData();
-                        },
-                      )),
-                ),
+                    ),
+                    margin: const EdgeInsets.symmetric(horizontal: 2.5),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        widget.fnDelete?.call(widget);
+                      },
+                    )),
+                Spacer(),
+                Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue, // Background color
+                      borderRadius: BorderRadius.circular(100),
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2.0,
+                      ),
+                    ),
+                    margin: const EdgeInsets.symmetric(horizontal: 2.5),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.search,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        _loadData();
+                      },
+                    ))
               ],
             ),
             Container(
               child: MetricChart(
                 key: chartKey,
-                title: "Disk ("+ widget.diskName + ") Usage Over time", 
+                title: "Disk (" + widget.diskName + ") Usage Over time",
               ),
             ),
             ExpansionTileBorderItem(
@@ -172,7 +194,7 @@ class DISKReportState extends State<DISKReport> {
                       items: [
                         ChartDataType.DISKUtilization,
                         ChartDataType.DISKReadSpeed,
-                        ChartDataType.DISKWriteSpeed, 
+                        ChartDataType.DISKWriteSpeed,
                       ].map((ChartDataType items) {
                         return DropdownMenuItem(
                           value: items,
@@ -200,7 +222,7 @@ class DISKReportState extends State<DISKReport> {
                         DataColumn(label: Text('Date Time')),
                         DataColumn(label: Text('Utilization(%)')),
                         DataColumn(label: Text('WriteSpeed(KB/s)')),
-                        DataColumn(label: Text('ReadSpeed(KB/s)')), 
+                        DataColumn(label: Text('ReadSpeed(KB/s)')),
                       ],
                       source: _DataSource(
                           data: data.where((e) {
@@ -215,21 +237,12 @@ class DISKReportState extends State<DISKReport> {
                         if (selectedType == ChartDataType.DISKWriteSpeed &&
                             e.writeSpeed >= threshold) {
                           return true;
-                        } 
+                        }
                         return false;
-                      }).toList())
-                      ),
+                      }).toList())),
                 ),
               ],
-            ),
-            if (widget.fnDelete != null)
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                onPressed: () {
-                  widget.fnDelete?.call(widget);
-                },
-                child: Text('Close Report'),
-              ),
+            ), 
           ],
         ));
   }
@@ -259,7 +272,7 @@ class DISKReportState extends State<DISKReport> {
     data.clear();
     if (mounted) setState(() {});
     data.addAll(await MetricController.getHistoricalDiskReading(
-        widget.node.getNodeId(),widget.diskName, dateStart, intvl, dateEnd));
+        widget.node.getNodeId(), widget.diskName, dateStart, intvl, dateEnd));
     if (mounted) {
       setState(() {});
     }
@@ -297,7 +310,7 @@ class _DataSource extends DataTableSource {
       DataCell(Text(dt.format(item.dateTime.toLocal()))),
       DataCell(Text(item.utilization.toStringAsFixed(2))),
       DataCell(Text(item.writeSpeed.toStringAsFixed(2))),
-      DataCell(Text(item.readSpeed.toStringAsFixed(2))), 
+      DataCell(Text(item.readSpeed.toStringAsFixed(2))),
     ]);
   }
 

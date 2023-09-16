@@ -42,14 +42,15 @@ class NodeConfigScreenState extends State<NodeConfigScreen>
         child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            title: Container(child: Row(children: [ 
+            title:Row(children: [ 
               const Text('Monitoring Configuration',style: TextStyle(color: Colors.blue),),
 
               (widget.node.access == 1) ? Switch(value: mainconfig['active']??true, onChanged: (value) {
                           _togglePush();
                         }):Container(),
               const Spacer(),
-              Expanded(child: 
+              Flexible( 
+                child: 
               TextFormField(
                 
                 controller: txtPushInterval,
@@ -61,9 +62,9 @@ class NodeConfigScreenState extends State<NodeConfigScreen>
                     _savePush();
                   },):null, 
                 ),
-              ),), 
-          ]),)
-          ,backgroundColor: Colors.white ,),
+              ),)
+          ]),
+          backgroundColor: Colors.white ,),
           body: CustomScrollView(
             slivers: [ 
               SliverPersistentHeader(
