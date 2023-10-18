@@ -12,3 +12,7 @@ Technology used/integrated:
 - Dart
 - Java (small part for native feature)
 - OneSignal (push notification)
+
+dummy acc:
+username: fukuro00
+password: asd123
