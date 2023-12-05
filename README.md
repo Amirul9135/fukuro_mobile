@@ -6,7 +6,9 @@ FUKURO stands for FUndamental Kernel Utilization Realtime Overseer which is a Mo
 
 FUKURO allows monitoring the fundamental metrics which have significant impact on a remote host performance which is the CPU, Memory, Disk and Network usage. Futhermore, FUKURO also provide customizable Metrics report based on the readings extracted by the agent application along with alert notificationa feature to notify user on when usage reaches configured threshold.
 
-This repository consist of the source code of only the mobile application part of the FUKURO system.
+This repository consist of the source code of the mobile application part of the FUKURO system.
+Fukuro mobile is the primary user interface which allow user to interact with the system and also their installed nodes.
+
 Technology used/integrated:
 - Flutter
 - Dart
