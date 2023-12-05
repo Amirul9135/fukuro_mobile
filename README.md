@@ -13,6 +13,6 @@ Technology used/integrated:
 - Java (small part for native feature)
 - OneSignal (push notification)
 
-dummy acc:
+dummy acc for testing/preview:
 username: fukuro00
 password: asd123
